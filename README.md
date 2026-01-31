@@ -46,7 +46,7 @@ This backend is **decoupled from the frontend** to allow focused learning in Nod
 - Teach backend development to all group members
 - Provide **portfolio-ready exposure** to API design, authentication, and data management
 
-## API Docs
+## API Documentation
 
 This section documents the manual API tests performed during our initial coding sprint.  
 Screenshots are provided for reference.
