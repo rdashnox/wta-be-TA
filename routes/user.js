@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const { getProfile } = require("../controllers/user.controller");
+const { getProfile, deleteAccount } = require("../controllers/user.controller");
 const router = express.Router();
 
 router.get(
@@ -8,5 +8,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   getProfile,
 );
+
+router.delete("/:id?", deleteAccount);
 
 module.exports = router;

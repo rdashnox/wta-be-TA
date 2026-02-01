@@ -23,22 +23,22 @@ const seedUsers = async () => {
 
     const users = [
       {
-        email: "user1@example.com",
+        email: "user1.wta@maildrop.cc",
         password: await hashPassword("123456"),
         role: "user",
       },
       {
-        email: "user2@example.com",
+        email: "user2.wta@maildrop.cc",
         password: await hashPassword("123456"),
         role: "user",
       },
       {
-        email: "user3@example.com",
+        email: "user3.wta@maildrop.cc",
         password: await hashPassword("123456"),
         role: "user",
       },
       {
-        email: "admin@example.com",
+        email: "admin.wta@maildrop.cc",
         password: await hashPassword("admin123"),
         role: "admin",
       },

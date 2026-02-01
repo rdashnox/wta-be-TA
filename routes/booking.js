@@ -1,18 +1,31 @@
 const express = require("express");
+const passport = require("passport");
+const {
+  createBooking,
+  getMyBookings,
+  getAllBookings,
+  updateBooking,
+  cancelBooking,
+} = require("../controllers/booking.controller");
+
+const { requireOwnership, requireRole } = require("../middleware/permissions");
 
 const router = express.Router();
 
-/**
- * TODO:
- * Connect controller functions to routes
- */
+// JWT REQUIRED FOR ALL ROUTES
+router.use(passport.authenticate("jwt", { session: false }));
 
-const bookingController = require("../controllers/booking.controller");
+// USER: Create + View own bookings
+router.post("/", createBooking);
+router.get("/", getMyBookings);
 
-router.get("/:id", bookingController.getMyBookings);
-router.get("/", bookingController.getAllBookings);
+// OWNER/ADMIN: Update + Delete own/specific booking
+router
+  .route("/:id")
+  .put(requireOwnership("Booking"), updateBooking)
+  .delete(requireOwnership("Booking"), cancelBooking);
 
-router.post("/", bookingController.createBooking);
-router.delete("/:id", bookingController.cancelBooking);
+// ADMIN ONLY: View ALL bookings
+router.get("/all", requireRole(["admin"]), getAllBookings);
 
 module.exports = router;

@@ -3,11 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
-    "test": "cross-env NODE_ENV=test jest --detectOpenHandles",
     "seed:users": "cross-env NODE_ENV=development node seeder/usersSeeder.js",
-    "seed:clear": "cross-env NODE_ENV=development node seeder/deleteAllUsers.js"
+    "seed:rooms": "cross-env NODE_ENV=development node seeder/roomSeeder.js",
+    "seed:bookings": "cross-env NODE_ENV=development node seeder/bookingSeeder.js",
+    "seed:all": "npm run seed:users && npm run seed:rooms && npm run seed:bookings",
+    "seed:clean": "cross-env NODE_ENV=development node seeder/deleteResources.js && npm run seed:all",
+    "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
+    "start": "NODE_ENV=production node ./bin/www",
+    "test": "NODE_ENV=test jest --detectOpenHandles"
   },
   "engines": {
     "node": ">=18"

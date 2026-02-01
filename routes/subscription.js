@@ -1,22 +1,24 @@
 const express = require("express");
+const passport = require("passport");
+
+const {
+  subscribe,
+  unsubscribe,
+  getAllSubscriptions,
+  sendNewsletter,
+} = require("../controllers/subscription.controller");
+
+const { requireRole } = require("../middleware/permissions");
 
 const router = express.Router();
 
-const subscriptionController = require("../controllers/subscription.controller");
-/**
- * TODO:
- * Connect controller functions to routes
- */
+// Public: Subscribe and unsubscribe
+router.post("/subscribe", subscribe);
+router.patch("/unsubscribe", unsubscribe);
 
-// POST: Used for creating a new subscription
-router.post("/subscribe", subscriptionController.subscribe);
+// Admin only: Protected routes
+router.use(passport.authenticate("jwt", { session: false }));
+router.get("/", requireRole(["admin"]), getAllSubscriptions);
+router.post("/send-newsletter", requireRole(["admin"]), sendNewsletter);
 
-// PATCH: Used for updating the status to "unsubscribed"
-router.patch("/unsubscribe", subscriptionController.unsubscribe);
-
-// GET: Used to fetch all subscription records
-router.get("/", subscriptionController.getAllSubscriptions);
-
-// POST: Used to trigger the newsletter simulation
-router.post("/send-newsletter", subscriptionController.sendNewsletter);
 module.exports = router;
