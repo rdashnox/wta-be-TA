@@ -1,10 +1,22 @@
-# Diagram
+# MongoDB Document Model
 
-## MongoDB Document Model Diagram
+The hotel booking system uses a **MongoDB document-oriented schema** with five main collections: **User, Room, Booking, Contact, and Subscription**. Relationships are managed via **ObjectId references** rather than enforced foreign keys.
+
+- **Booking** embeds guest and stay data for historical accuracy and optimized reads.
+- **Contact** supports both authenticated and guest users via an optional reference.
+- **Subscription** is standalone for marketing purposes.
+
+The accompanying table details all fields, types, and embedded structures, providing a concise, implementation-ready view of the database design.
+
+---
+
+## Diagram Representation
 
 [![Users Table](https://drive.google.com/uc?export=view&id=1lyxEqFfRGLn0i42dbkDf4XDDAEapT-3Z)](https://drive.google.com/file/d/1lyxEqFfRGLn0i42dbkDf4XDDAEapT-3Z/view?usp=sharing)
 
-## MongoDB Document Model – Table Representation
+---
+
+## Table Representation
 
 This table describes the **logical document structure** of each MongoDB collection, including **embedded fields** and **logical references**.
 
@@ -85,13 +97,3 @@ This table describes the **logical document structure** of each MongoDB collecti
 | `email`        | String (unique) | Subscriber email      |
 | `subscribedAt` | DateTime        | Subscription date     |
 | `status`       | String          | Active / Unsubscribed |
-
-### Database Description
-
-The hotel booking system uses a **MongoDB document-oriented schema** with five main collections: **User, Room, Booking, Contact, and Subscription**. Relationships are managed via **ObjectId references** rather than enforced foreign keys.
-
-- **Booking** embeds guest and stay data for historical accuracy and optimized reads.
-- **Contact** supports both authenticated and guest users via an optional reference.
-- **Subscription** is standalone for marketing purposes.
-
-The accompanying table details all fields, types, and embedded structures, providing a concise, implementation-ready view of the database design.
