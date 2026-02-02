@@ -1,4 +1,8 @@
-# wta-backend
+# Diagram
+
+## MongoDB Document Model Diagram
+
+[![Users Table](https://drive.google.com/uc?export=view&id=1lyxEqFfRGLn0i42dbkDf4XDDAEapT-3Z)](https://drive.google.com/file/d/1lyxEqFfRGLn0i42dbkDf4XDDAEapT-3Z/view?usp=sharing)
 
 ## MongoDB Document Model – Table Representation
 
@@ -82,104 +86,12 @@ This table describes the **logical document structure** of each MongoDB collecti
 | `subscribedAt` | DateTime        | Subscription date     |
 | `status`       | String          | Active / Unsubscribed |
 
-## MongoDB Document Model Diagram
+### Database Description
 
-```plantuml
+The hotel booking system uses a **MongoDB document-oriented schema** with five main collections: **User, Room, Booking, Contact, and Subscription**. Relationships are managed via **ObjectId references** rather than enforced foreign keys.
 
-@startuml WTA_Hotel_MongoDB_Document_Model
-!theme plain
+- **Booking** embeds guest and stay data for historical accuracy and optimized reads.
+- **Contact** supports both authenticated and guest users via an optional reference.
+- **Subscription** is standalone for marketing purposes.
 
-skinparam monochrome true
-skinparam shadowing false
-skinparam linetype ortho
-
-title **Skye Suites Dynamic Hotel Facility Extension Application – MongoDB Document Model Diagram**
-
-package "MongoDB Collections" {
-
-  entity "User Collection" as User {
-    _id : ObjectId
-    email : String (unique)
-    password : String
-    firstName : String
-    lastName : String
-    phone : String
-    createdAt : DateTime
-  }
-
-  entity "Room Collection" as Room {
-    _id : ObjectId
-    roomNumber : String (unique)
-    type : String
-    price : Number
-    description : String
-    available : Boolean
-    imageUrls : String[]
-    createdAt : DateTime
-  }
-
-  entity "Booking Collection" as Booking {
-    _id : ObjectId
-    userId : ObjectId (ref User)
-    roomId : ObjectId (ref Room)
-    guest_firstName : String
-    guest_lastName : String
-    guest_phone : String
-    guest_email : String
-    stay_checkInDate : DateTime
-    stay_checkOutDate : DateTime
-    stay_adults : Number
-    stay_children : Number
-    stay_boardType : String
-    totalCost : Number
-    note : String
-    status : String
-    createdAt : DateTime
-  }
-
-  entity "Contact Collection" as Contact {
-    _id : ObjectId
-    userId : ObjectId (optional ref User)
-    name : String
-    email : String
-    phone : String
-    subject : String
-    message : String
-    createdAt : DateTime
-  }
-
-  entity "Subscription Collection" as Subscription {
-    _id : ObjectId
-    email : String (unique)
-    subscribedAt : DateTime
-    status : String
-  }
-}
-
-' Logical references (not enforced by MongoDB)
-User ||--o{ Booking : references
-Room ||--o{ Booking : references
-User ||--o| Contact : optional reference
-
-note right of Subscription
-  Standalone collection:
-  • Used for newsletter marketing
-  • No User relationship
-end note
-
-footer MongoDB | Document Model | Embedding + References
-@enduml
-
-```
-
-The **MongoDB Document Model Diagram** and the accompanying **table-based schema** describe the logical data design of the hotel booking system implemented using a **document-oriented database**. Unlike traditional ERDs designed for relational systems, this visualization emphasizes **collections, documents, embedded data, and logical ObjectId references**, which more accurately reflect MongoDB’s storage model and access patterns.
-
-The diagram illustrates five core collections: **User, Room, Booking, Contact, and Subscription**. Each collection stores related documents identified by MongoDB-generated ObjectIds. Relationships between collections are represented using **logical references** rather than enforced foreign keys, as referential integrity is managed at the application level in MongoDB.
-
-The **Booking collection** demonstrates selective denormalization through embedded snapshot data. Guest information and stay details are stored directly within the booking document to preserve historical accuracy, reduce dependency on user profile updates, and optimize read performance for booking-related queries.
-
-The **Contact collection** supports both authenticated and guest users by allowing the user reference to be optional, enabling flexible message handling within a single collection. The **Subscription collection** is modeled as a standalone collection, as it serves a marketing function and does not require a direct association with registered users.
-
-The table representation complements the diagram by providing a **field-level specification** of each collection, including data types and descriptions. Embedded documents are flattened using prefixed field names for clarity while directly mapping to nested structures in the MongoDB implementation.
-
-Together, the diagram and table provide a concise, implementation-oriented view of the database design, clearly communicating structure, relationships, and modeling decisions in a manner appropriate for a MongoDB-based NoSQL system.
+The accompanying table details all fields, types, and embedded structures, providing a concise, implementation-ready view of the database design.
