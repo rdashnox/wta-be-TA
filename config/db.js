@@ -9,14 +9,14 @@ const connectDB = async () => {
     if (config.isTest) {
       const mongoServer = await MongoMemoryServer.create();
       mongoUri = mongoServer.getUri();
-      console.log("Using in-memory MongoDB for testing");
+      console.log("Using in-memory MongoDB for testing 🧪");
+    } else if (config.env === "development") {
+      console.log(`Connecting to MongoDB on DEV mode 🌱`);
     } else {
-      console.log(`Connecting to MongoDB`);
+      console.log("MongoDB connected 🚀");
     }
 
     await mongoose.connect(mongoUri);
-
-    console.log("MongoDB connected");
   } catch (error) {
     console.error("DB connection error:", error);
     process.exit(1);
