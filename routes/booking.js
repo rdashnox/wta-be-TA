@@ -6,7 +6,7 @@ const {
   getAllBookings,
   updateBooking,
   cancelBooking,
-  getAvailableRooms,  // Import the new controller function
+  getAvailableRooms, 
 } = require("../controllers/booking.controller");
 
 const { requireOwnership, requireRole } = require("../middleware/permissions");
