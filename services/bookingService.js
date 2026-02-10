@@ -47,21 +47,26 @@ exports.createBooking = async (bookingData, userId) => {
 
   // CALCULATE PRICING (Palawan luxury rates)
   const pricing = calculatePricing(
-    roomDoc.price, 
-    checkInDate, 
-    checkOutDate, 
+    roomDoc.price,
+    checkInDate,
+    checkOutDate,
     parseInt(adults),
-    parseInt(children), 
-    boardType, 
+    parseInt(children),
+    boardType,
   );
 
   // ROOM AVAILABILITY CHECK
-  const overlapping = await Booking.findOne({
-    room,
-    $or: [{ checkInDate: { $lt: endDate }, checkOutDate: { $gt: startDate } }],
+  // Overlap condition: existing booking overlaps requested date range
+  const overlappingCount = await Booking.countDocuments({
+    room: roomDoc.id,
+    status: "active", 
+    checkInDate: { $lt: checkOutDate },
+    checkOutDate: { $gt: checkInDate },
   });
 
-  if (overlapping) throw new Error("Room unavailable for selected dates");
+  if (overlappingCount >= roomDoc.capacity) {
+    throw new Error("Room type fully booked for selected dates");
+  }
 
   // CREATE BOOKING WITH FULL PRICING + NOTE
   const booking = await Booking.create({
@@ -150,7 +155,7 @@ exports.updateBooking = async (bookingId, updateData, userId) => {
     updates.nights = pricing.nights;
     updates.totalCost = pricing.totalCost;
     updates.pricingBreakdown = pricing.breakdown;
-    updates.roomPrice = booking.room.price; 
+    updates.roomPrice = booking.room.price;
   }
 
   // Validate new dates if changed
@@ -160,18 +165,15 @@ exports.updateBooking = async (bookingId, updateData, userId) => {
       throw new Error("Check-out must be after check-in");
     }
 
-    const overlapping = await Booking.findOne({
-      room: booking.room._id,
-      _id: { $ne: bookingId },
-      $or: [
-        {
-          checkInDate: { $lt: newEndDate },
-          checkOutDate: { $gt: booking.checkInDate },
-        },
-      ],
+    const bookedCount = await Booking.countDocuments({
+      room,
+      checkInDate: { $lt: endDate },
+      checkOutDate: { $gt: startDate },
     });
 
-    if (overlapping) throw new Error("Room unavailable for new dates");
+    if (bookedCount >= roomDoc.capacity) {
+      throw new Error("Room unavailable for selected dates");
+    }
   }
 
   await Booking.findByIdAndUpdate(bookingId, updates);

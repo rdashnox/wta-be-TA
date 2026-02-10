@@ -61,10 +61,56 @@ exports.updateBooking = async (req, res) => {
 exports.cancelBooking = async (req, res) => {
   try {
     // Ownership already checked by middleware
-    await Booking.findByIdAndDelete(req.params.id);
-    res.status(204).json({ message: "Booking deleted successfully" });
+    await Booking.findByIdAndUpdate(req.params.id, {
+      status: "cancelled",
+    });
+
+    res.status(200).json({ message: "Booking cancelled!" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
+// Get available rooms for a specific type and dates
+exports.getAvailableRooms = async (req, res) => {
+  try {
+    const { type, checkInDate, checkOutDate } = req.query;
+
+    // Parse dates
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+
+    // Find rooms of the specified type
+    const rooms = await Room.find({ type });
+
+    // Get active bookings that overlap with the requested dates
+    const bookings = await Booking.find({
+      room: { $in: rooms.map((room) => room._id) },
+      status: "active", // Only consider active bookings
+      $or: [
+        { checkInDate: { $lte: checkOut }, checkOutDate: { $gte: checkIn } },
+        { checkInDate: { $gte: checkIn }, checkInDate: { $lte: checkOut } },
+      ],
+    });
+
+    // For each room, calculate how many are available based on overlapping active bookings
+    const availableRooms = rooms.filter((room) => {
+      const bookedCount = bookings.filter(
+        (booking) => booking.room.toString() === room._id.toString(),
+      ).length;
+
+      return room.capacity > bookedCount; // Room is available if capacity is greater than bookedCount
+    });
+
+    if (availableRooms.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No rooms available for the selected dates." });
+    }
+
+    res.json(availableRooms);
+  } catch (error) {
+    console.error("Error getting available rooms:", error);
+    res.status(500).json({ message: "Error calculating room availability." });
+  }
+};
