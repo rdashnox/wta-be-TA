@@ -1,6 +1,6 @@
-# Project Technical Documentation
+# wta-be: Project Technical Documentation
 
-This document provides **all technical and operational guidance** for running, developing, and extending the Skye Suites Dynamic Hotel Facility backend API.
+This document provides **all technical and operational guidance** for running, developing, and extending the Skye Suites Dynamic Hotel Facility backend API. For the frontend part of the project, please check the [wta-fe repository](https://github.com/imperionite/wta-fe).
 
 ---
 
@@ -89,7 +89,7 @@ Start development:
 npm run dev   # run for daily development use
 npm start     # should be run when deployed in the cloud only as a start script; never run this locally
 npm run seed:users # seed initial users (dev only; read seeder/usersSeeder.js)
-npm run seed:clear # delete all users (dev only; read seeder/deleteAllUsers.js)
+npm run seed:clear # delete resources except admin users then recreate again (dev only)
 npm run test # on progress; no test environment yet
 
 ```
