@@ -11,7 +11,7 @@ For technical version of this document, see [README-TECHNICAL](https://github.co
 The API enhances the original static website by enabling:
 
 - **User Authentication:** Secure guest accounts with JWT and role-based access control (user/admin)
-- **Booking System:** Real-time room availability and reservation management
+- **Booking System:** Rooms are treated as infinitely available; availability is derived from bookings rather than a fixed inventory.
 - **Contact & Subscription Management:** Store inquiries and newsletter subscriptions
 - **Admin Dashboard:** Oversight of reservations, messages, and subscribers
 

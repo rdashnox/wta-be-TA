@@ -240,3 +240,109 @@ console.log(data.id, data.email, data.role);
 - Use `id` for all frontend communication
 - Contact & subscription forms **do not need real email sending**, mock is acceptable
 - Booking system is protected; advanced endpoints can be assigned to two members if needed
+
+### **Booking Rules & Business Assumptions**
+
+#### **Booking Creation**
+
+- **Required fields**: first name, last name, phone, email, check-in/check-out dates, room, adults, and board type.
+- **Validation**:
+  - Check-in date cannot be in the past.
+  - Check-out date must be after the check-in date.
+  - At least one adult is required for a booking.
+
+- **Pricing**: Pricing is calculated **server-side** based on the room price at the time of booking, number of guests, and selected board type.
+- **Room availability**: Rooms are checked for availability based on the booking’s check-in and check-out dates. If the room is unavailable for the selected dates, the booking cannot be created.
+
+---
+
+#### **Booking Updates**
+
+- **Allowed updates**:
+  - Check-out date
+  - Number of adults/children
+  - Board type (e.g., Breakfast, Half-board)
+  - Booking notes
+
+- **Limitations**:
+  - **Check-in date cannot be modified** once the booking is created.
+  - Bookings cannot be modified after the check-in date has passed.
+
+- **Pricing**: Updates that change the number of guests or dates trigger a full recalculation of pricing.
+- **Availability**: When modifying a booking, the system will re-check room availability for the new dates. If the room is unavailable, an error will be returned.
+
+---
+
+#### **Booking Cancellation (Soft-Delete)**
+
+- Bookings are **soft-deleted** by updating their status rather than being removed from the database.
+- **Status field**:
+  - `"active"`: The booking is valid and confirmed.
+  - `"cancelled"`: The booking has been cancelled but remains in the database for historical reference.
+  - `"completed"`: The booking has been completed (though not yet implemented in this POC).
+
+- **Cancellation Process**:
+  - A user can cancel their own booking, and an admin can cancel any booking.
+  - When a booking is cancelled, its status is updated to `"cancelled"`, and it is retained in the database for record-keeping.
+
+---
+
+### **Room Availability & Race Condition**
+
+Room availability is determined based on overlapping bookings for the selected check-in and check-out dates.
+
+**Known Issue:**
+
+- Since availability is checked separately from booking creation, there is a possibility of a race condition where two users could book the same room for the same dates at the same time. This issue is not addressed in the current implementation but is acknowledged as a limitation for the proof-of-concept.
+
+**Future Considerations**:
+
+- In a production system, this race condition would be addressed using **MongoDB transactions** or **inventory locking** to make room availability checks and bookings atomic operations.
+
+---
+
+### **Known Limitations**
+
+- **Concurrency issues**: No protection against concurrent bookings for the same room/date range (race condition).
+- **No room inventory**: The system does not track an actual inventory of rooms, treating them as infinitely available.
+- **Booking status lifecycle**: Currently, bookings are either active or cancelled. A full lifecycle (e.g., confirmed, completed, refunded) would be implemented in a real-world system.
+- **Refunds and payments**: The current system does not handle payments, refunds, or payment statuses.
+- **Booking history**: There is no history of changes made to a booking (e.g., date changes, price updates).
+
+These limitations are **intentional** and part of the project’s scope as a proof-of-concept.
+
+---
+
+### **Seeder Behavior**
+
+- The current **seeder** script performs a **hard delete** on all resources (users, bookings, rooms, subscriptions) for resetting the development database.
+- **Important Note**: The seeder bypasses any business rules, including the soft-delete logic for bookings. This is acceptable for development purposes but is not reflective of the application’s real-world behavior.
+- For the production environment, bookings would be **soft-deleted** by updating their `status` to `"cancelled"`, preserving historical data.
+
+### Example seeder modification for soft-deleting bookings:
+
+```js
+// Instead of hard-deleting bookings, update the status to 'cancelled'
+await Booking.updateMany({}, { status: "cancelled" });
+```
+
+---
+
+### **Room Availability & Booking Race Condition: Future Considerations**
+
+In this proof-of-concept, **room availability** is checked by querying overlapping bookings at the time of booking creation. However, since availability checks and bookings are not wrapped in a single atomic transaction, there exists a potential **race condition** where two users could book the same room at the same time.
+
+**Possible improvements**:
+
+- **MongoDB Transactions**: Implementing MongoDB transactions would ensure atomicity between availability checks and booking creation, preventing race conditions.
+- **Pessimistic Locking**: Locking the room’s availability during the booking process could ensure that only one user can book a room for a specific date range.
+- **Inventory Model**: Implementing an inventory model that tracks available rooms per date could be used to prevent double bookings.
+
+## Additional Notes
+
+- **Seeders**: The current seeders clear out all resources, including bookings, by performing hard deletes. This does not reflect the production-level behavior, where bookings would be soft-deleted (status updated to "cancelled").
+- **Change Requests**: In future iterations, the following could be added:
+  - Full inventory management for rooms
+  - Transactional safety for concurrent bookings
+  - A complete booking lifecycle (confirmed, completed, cancelled)
+  - Payment integration and refund logic

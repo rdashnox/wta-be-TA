@@ -29,6 +29,11 @@ const bookingSchema = new mongoose.Schema(
       maxlength: [500, "Note too long"],
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ["active", "cancelled", "completed"],
+      default: "active",
+    },
 
     // References
     room: { type: mongoose.Schema.Types.ObjectId, ref: "Room", required: true },
@@ -47,6 +52,13 @@ const bookingSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// Index to optimize overlap queries for room availability checks
+bookingSchema.index({
+  room: 1,
+  checkInDate: 1,
+  checkOutDate: 1,
+});
 
 // Clean JSON for frontend (hides MongoDB internals)
 bookingSchema.set("toJSON", {
