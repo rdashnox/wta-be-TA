@@ -1,4 +1,5 @@
 const bookingService = require("../services/bookingService");
+const Room = require("../models/Room");
 const Booking = require("../models/Booking");
 
 /**
@@ -60,14 +61,23 @@ exports.updateBooking = async (req, res) => {
  */
 exports.cancelBooking = async (req, res) => {
   try {
-    // Ownership already checked by middleware
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Ownership already checked by middleware, but verify status
+    if (booking.status === "cancelled") {
+      return res.status(400).json({ message: "Booking already cancelled" });
+    }
+
     await Booking.findByIdAndUpdate(req.params.id, {
       status: "cancelled",
     });
 
-    res.status(200).json({ message: "Booking cancelled!" });
+    res.status(200).json({ message: "Booking cancelled successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -89,7 +99,7 @@ exports.getAvailableRooms = async (req, res) => {
       status: "active", // Only consider active bookings
       $or: [
         { checkInDate: { $lte: checkOut }, checkOutDate: { $gte: checkIn } },
-        { checkInDate: { $gte: checkIn }, checkInDate: { $lte: checkOut } },
+        { checkInDate: { $lt: checkOut }, checkOutDate: { $gt: checkIn } },
       ],
     });
 
