@@ -1,4 +1,4 @@
-# wta-be
+# WTA-BE
 
 This project is the **backend extension** of the Skye Suites static hotel website (HTML/CSS/JS). It provides **dynamic features** such as booking management, contact handling, and subscriptions using a Node.js/Express API connected to MongoDB. For the frontend part of the project, see the [wta-fe repository](https://github.com/imperionite/wta-fe).
 
