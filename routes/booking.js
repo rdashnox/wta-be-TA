@@ -8,6 +8,7 @@ const {
   cancelBooking,
   getAvailableRooms, 
 } = require("../controllers/booking.controller");
+const { validateBookingCreate, validateBookingUpdate } = require('../middleware/validation');
 
 const { requireOwnership, requireRole } = require("../middleware/permissions");
 
@@ -20,13 +21,13 @@ router.use(passport.authenticate("jwt", { session: false }));
 router.get("/all", requireRole(["admin"]), getAllBookings);
 
 // USER: Create + View own bookings
-router.post("/", createBooking);
+router.post("/", validateBookingCreate, createBooking);
 router.get("/", getMyBookings);
 
 // OWNER/ADMIN: Update + Delete booking by ID
 router
   .route("/:id")
-  .put(requireOwnership("Booking"), updateBooking)
+  .put(validateBookingUpdate, requireOwnership("Booking"), updateBooking)
   .delete(requireOwnership("Booking"), cancelBooking);
 
 // Route to check available rooms
