@@ -1,4 +1,4 @@
-# wta-be: Project Technical Documentation
+# WTA-BE: Project Technical Documentation
 
 This document provides **all technical and operational guidance** for running, developing, and extending the Skye Suites Dynamic Hotel Facility backend API. For the frontend part of the project, please check the [wta-fe repository](https://github.com/imperionite/wta-fe).
 
