@@ -37,7 +37,7 @@ exports.register = async (req, res) => {
     // Create JWT
     const access = jwt.sign(
       {
-        sub: newUser._id.toString(),
+        id: newUser._id.toString(),
         email: newUser.email,
         role: newUser.role,
       },
@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
     res.status(201).json({
       access,
       user: {
-        id: newUser._id,
+        id: newUser._id.toString(),
         email: newUser.email,
         role: newUser.role,
       },
@@ -80,7 +80,7 @@ exports.login = async (req, res) => {
 
     res.json({
       access,
-      user: { id: user._id, email: user.email, role: user.role },
+      user: { id: user._id.toString(), email: user.email, role: user.role },
     });
   } catch (error) {
     console.error("Login error:", error.message);

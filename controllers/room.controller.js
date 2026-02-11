@@ -25,7 +25,7 @@ exports.getRoomById = async (req, res) => {
 // PRICE PREVIEW (Public - Frontend cart)
 exports.getRoomPricePreview = async (req, res) => {
   try {
-    const { roomId } = req.params;
+    const { id } = req.params;
     const {
       checkInDate,
       checkOutDate,
@@ -34,7 +34,13 @@ exports.getRoomPricePreview = async (req, res) => {
       boardType,
     } = req.query;
 
-    const room = await Room.findById(roomId);
+    if (!checkInDate || !checkOutDate || !adults || !boardType) {
+      return res
+        .status(400)
+        .json({ message: "Missing required pricing parameters" });
+    }
+
+    const room = await Room.findById(id);
     if (!room) return res.status(404).json({ message: "Room not found" });
 
     const pricing = calculatePricing(
@@ -47,14 +53,8 @@ exports.getRoomPricePreview = async (req, res) => {
     );
 
     res.json({
-      room: {
-        id: room._id,
-        roomNumber: room.roomNumber,
-        type: room.type,
-        price: room.price,
-      },
+      room,
       pricing,
-      available: true,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -64,14 +64,15 @@ exports.getRoomPricePreview = async (req, res) => {
 // Admin CRUD (unchanged)
 exports.createRoom = async (req, res) => {
   try {
-    const { roomNumber, type, price, description, images } = req.body;
+    const { type, price, maxGuests, images } = req.body;
+
     const room = await Room.create({
-      roomNumber,
       type,
       price,
-      description,
+      maxGuests,
       images,
     });
+
     res.status(201).json(room);
   } catch (err) {
     res.status(400).json({ message: err.message });

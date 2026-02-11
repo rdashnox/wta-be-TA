@@ -17,22 +17,16 @@ exports.getProfile = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
   try {
-    const targetId = req.params.id || req.user._id;
-    
-    // Self or admin only
-    if (req.user._id.toString() !== targetId && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Can only delete own account" });
-    }
+    const targetId = req.params.id;
 
     const user = await User.findById(targetId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Mongoose pre('remove') hook auto-deletes bookings
     await user.deleteOne();
-    
-    res.json({ message: `User ${user.email} + bookings deleted` });
+
+    res.status(200).json({ message: "User deleted!" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
-
