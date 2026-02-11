@@ -37,7 +37,11 @@ exports.createBooking = async (bookingData, userId) => {
   // Date validation
   if (isNaN(startDate) || isNaN(endDate))
     throw new Error("Invalid date format");
-  if (startDate < new Date()) throw new Error("Check-in cannot be in past");
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (startDate < today) throw new Error("Check-in cannot be in the past");
   if (startDate >= endDate) throw new Error("Check-out must be after check-in");
   if (parseInt(adults) < 1) throw new Error("At least one adult required");
 
@@ -45,28 +49,22 @@ exports.createBooking = async (bookingData, userId) => {
   const roomDoc = await Room.findById(room);
   if (!roomDoc) throw new Error("Room not found");
 
-  // CALCULATE PRICING (Palawan luxury rates)
+  // Guest capacity validation
+  const totalGuests = parseInt(adults) + parseInt(children);
+
+  if (totalGuests > roomDoc.maxGuests) {
+    throw new Error("Number of guests exceeds room capacity");
+  }
+
+  // CALCULATE PRICING
   const pricing = calculatePricing(
     roomDoc.price,
-    checkInDate,
-    checkOutDate,
+    startDate,
+    endDate,
     parseInt(adults),
     parseInt(children),
     boardType,
   );
-
-  // ROOM AVAILABILITY CHECK
-  // Overlap condition: existing booking overlaps requested date range
-  const overlappingCount = await Booking.countDocuments({
-    room: roomDoc.id,
-    status: "active", 
-    checkInDate: { $lt: checkOutDate },
-    checkOutDate: { $gt: checkInDate },
-  });
-
-  if (overlappingCount >= roomDoc.capacity) {
-    throw new Error("Room type fully booked for selected dates");
-  }
 
   // CREATE BOOKING WITH FULL PRICING + NOTE
   const booking = await Booking.create({
@@ -105,51 +103,58 @@ exports.getUserBookings = async (userId) => {
 /**
  * Update booking (dates, guests, board type only) + RECALCULATE PRICING
  */
-exports.updateBooking = async (bookingId, updateData, userId) => {
-  const booking = await Booking.findOne({
-    _id: bookingId,
-    user: userId,
-  }).populate("room");
-
+exports.updateBooking = async (bookingId, updateData) => {
+  const booking = await Booking.findById(bookingId).populate("room");
   if (!booking) throw new Error("Booking not found");
 
-  // Prevent past check-in updates
   if (new Date(booking.checkInDate) < new Date()) {
     throw new Error("Cannot update past bookings");
   }
 
-  // Allow only safe fields
-  const allowedUpdates = [
-    "checkOutDate",
-    "adults",
-    "children",
-    "boardType",
-    "note",
-  ];
   const updates = {};
 
-  for (const [key, value] of Object.entries(updateData)) {
-    if (allowedUpdates.includes(key)) {
-      updates[key] = value;
+  // Apply simple fields
+  if (updateData.phone) updates.phone = updateData.phone.trim();
+  if (updateData.email) updates.email = updateData.email.trim().toLowerCase();
+  if (updateData.note !== undefined) updates.note = updateData.note.trim();
+  if (updateData.adults !== undefined)
+    updates.adults = parseInt(updateData.adults);
+  if (updateData.children !== undefined)
+    updates.children = parseInt(updateData.children);
+  if (updateData.boardType) updates.boardType = updateData.boardType;
+
+  // CheckOutDate
+  if (updateData.checkOutDate) {
+    const newEndDate = new Date(updateData.checkOutDate);
+    if (newEndDate <= booking.checkInDate) {
+      throw new Error("Check-out must be after check-in");
     }
+
+    // Room availability: guest capacity, not inventory
+    const totalGuests =
+      (updateData.adults ?? booking.adults) +
+      (updateData.children ?? booking.children);
+    if (totalGuests > booking.room.maxGuests) {
+      throw new Error("Number of guests exceeds room capacity");
+    }
+
+    updates.checkOutDate = newEndDate;
   }
 
-  // RECALCULATE PRICING if dates/guests/board changed
+  // Recalculate pricing if needed
   if (
     updates.checkOutDate ||
-    updates.adults ||
-    updates.children ||
+    updates.adults !== undefined ||
+    updates.children !== undefined ||
     updates.boardType
   ) {
     const pricing = calculatePricing(
       booking.room.price,
       booking.checkInDate,
       updates.checkOutDate || booking.checkOutDate,
-      updates.adults || booking.adults,
-      updates.children !== undefined
-        ? parseInt(updates.children)
-        : booking.children,
-      updates.boardType || booking.boardType,
+      updates.adults ?? booking.adults,
+      updates.children ?? booking.children,
+      updates.boardType ?? booking.boardType,
     );
 
     updates.nights = pricing.nights;
@@ -158,24 +163,9 @@ exports.updateBooking = async (bookingId, updateData, userId) => {
     updates.roomPrice = booking.room.price;
   }
 
-  // Validate new dates if changed
-  if (updates.checkOutDate) {
-    const newEndDate = new Date(updates.checkOutDate);
-    if (newEndDate <= booking.checkInDate) {
-      throw new Error("Check-out must be after check-in");
-    }
+  const updated = await Booking.findByIdAndUpdate(bookingId, updates, {
+    new: true,
+  }).populate("room");
 
-    const bookedCount = await Booking.countDocuments({
-      room,
-      checkInDate: { $lt: endDate },
-      checkOutDate: { $gt: startDate },
-    });
-
-    if (bookedCount >= roomDoc.capacity) {
-      throw new Error("Room unavailable for selected dates");
-    }
-  }
-
-  await Booking.findByIdAndUpdate(bookingId, updates);
-  return await Booking.findById(bookingId).populate("room");
+  return updated;
 };

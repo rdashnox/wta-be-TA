@@ -1,101 +1,131 @@
-const Joi = require ('joi')
-const { Types } = require('mongoose');
+const Joi = require("joi");
+const { Types } = require("mongoose");
 
+// ----------------- Custom Validators -----------------
+
+// Validate MongoDB ObjectId
 const objectId = (value, helpers) => {
-    if (!Types.ObjectId.isValid(value)) {
-        return helpers.error('any.invalid'); // Returns a Joi error if not a valid ObjectId
-    }
-    return value; // Returns if valid
+  if (!Types.ObjectId.isValid(value)) {
+    return helpers.error("any.invalid"); // Returns a Joi error if not a valid ObjectId
+  }
+  return value; // Returns if valid
 };
 
-// Custom validtor for checkInDate to be today or in the future (strictly not in the past)
+// Validator for checkInDate to be today or future
 const checkInDateTodayOrFuture = (value, helpers) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to midnight to compare dates only
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    if (new Date(value) < today) {
-        return helpers.message ('checkInDate must be today or a future date');
-    }
-    return value;
+  if (new Date(value) < today) {
+    return helpers.message("checkInDate must be today or a future date");
+  }
+  return value;
 };
 
-// Custom validator for checkOutDate to be at least one day after checkInDate (minimum one night stay)
+// Validator for checkOutDate at least 1 day after checkInDate
 const checkOutDateMinimumOneNight = (value, helpers) => {
-    // Check with checkInDate from the booking data being validated
-    const checkInDate = new Date(helpers.state.ancestors[0].checkInDate);
-    const checkOutDate = new Date(value);
+  const checkInDate = new Date(helpers.state.ancestors[0].checkInDate);
+  const checkOutDate = new Date(value);
 
-    // Calculate the difference in days between checkInDate and checkOutDate
-    const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = checkOutDate.getTime() - checkInDate.getTime();
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-    if (diffDays < 1) {
-        return helpers.message('checkOutDate must be at least one day after checkInDate');
-    }
-    return value;
+  if (diffDays < 1) {
+    return helpers.message(
+      "checkOutDate must be at least one day after checkInDate",
+    );
+  }
+  return value;
 };
 
-// --Joi Schemas --
+// ----------------- Joi Schemas -----------------
 
-// Defining schema for creating a new booking (all fields required)
+// Create Booking Schema
 const createBookingSchema = Joi.object({
-    firstName: Joi.string().min(1).max(50).required(),
-    lastName: Joi.string().min(1).max(50).required(),
-    phone: Joi.string().min(10).max(20).required(),
-    email: Joi.string().email().lowercase().required(),
-    checkInDate: Joi.date().iso().required().custom(checkInDateTodayOrFuture, 'checkInDate today or future validation'),
-    // checkOutDate needs to be greater than checkInDate AND pass the custom one-night minimum validation
-    checkOutDate: Joi.date().iso().required()
-    .greater(Joi.ref('checkInDate')) // Ensures checkOutDate is strictly after checkInDate
-   .custom(checkOutDateMinimumOneNight, 'checkOutDate minimum one night validation'),
-   adults: Joi.number().integer().min(1).max(4).required(),
-   children: Joi.number().integer().min(0).max(6).default(0), // default(0) if not provided/selected
-   boardType: Joi.string().valid('Breakfast', 'Half-board').required(),
-   room: Joi.string().custom(objectId, 'MongoDB ObjectId').required(), // Uses our custom objectId validator
-   note: Joi.string().max(500).allow('') // Allow empty string for note
+  firstName: Joi.string().min(1).max(50).required(),
+  lastName: Joi.string().min(1).max(50).required(),
+  phone: Joi.string().min(10).max(20).required(),
+  email: Joi.string().email().lowercase().required(),
+  checkInDate: Joi.date()
+    .iso()
+    .required()
+    .custom(checkInDateTodayOrFuture, "checkInDate today or future validation"),
+  checkOutDate: Joi.date()
+    .iso()
+    .required()
+    .greater(Joi.ref("checkInDate"))
+    .custom(
+      checkOutDateMinimumOneNight,
+      "checkOutDate minimum one night validation",
+    ),
+  adults: Joi.number().integer().min(1).max(4).required(),
+  children: Joi.number().integer().min(0).max(6).default(0),
+  boardType: Joi.string().valid("Breakfast", "Half-board").required(),
+  room: Joi.string().custom(objectId, "MongoDB ObjectId").required(),
+  note: Joi.string().max(500).allow(""),
 });
 
-// Schema for updating an existing booking (all fields optional but at least one is required)
+// Update Booking Schema
 const updateBookingSchema = Joi.object({
-    firstName: Joi.string().min(1).max(50), 
-    lastName: Joi.string().min(1).max(50),   
-    phone: Joi.string().min(10).max(20),     
-    email: Joi.string().email().lowercase(), 
-    checkInDate: Joi.date().iso().custom(checkInDateTodayOrFuture, 'checkInDate today or future validation'), 
-    checkOutDate: Joi.date().iso()
-        .greater(Joi.ref('checkInDate')) // Still needs to be greater than checkInDate
-        .custom(checkOutDateMinimumOneNight, 'checkOutDate minimum one night validation'), 
-   adults: Joi.number().integer().min(1).max(4), 
-   children: Joi.number().integer().min(0).max(6), // No default needed for update
-   boardType: Joi.string().valid('Breakfast', 'Half-board'), 
-   room: Joi.string().custom(objectId, 'MongoDB ObjectId'), 
-   note: Joi.string().max(500).allow('') 
-}).min(1); //Ensures at least one field is provided for an upodate
+  phone: Joi.string().min(10).max(20),
+  email: Joi.string().email().lowercase(),
+  checkOutDate: Joi.date()
+    .iso()
+    .custom((value, helpers) => {
+      const checkInDate =
+        helpers.state.ancestors[0].checkInDate ||
+        helpers.state.ancestors[0]._existingCheckInDate;
+      if (!checkInDate) {
+        return helpers.message(
+          "Cannot validate checkOutDate without checkInDate",
+        );
+      }
 
-// -- General Validation Middleware Factory -- 
+      if (new Date(value) <= new Date(checkInDate)) {
+        return helpers.message(
+          "checkOutDate must be at least one day after checkInDate",
+        );
+      }
+      return value;
+    }),
 
-// This function will take the Joi schema and returns an Express middleware function
+  adults: Joi.number().integer().min(1).max(4),
+  children: Joi.number().integer().min(0).max(6),
+  boardType: Joi.string().valid("Breakfast", "Half-board"),
+  note: Joi.string().max(500).allow(""),
+}).min(1);
+
+// ----------------- Middleware Factory -----------------
+
+// General purpose validator for req.body
 const validate = (schema) => (req, res, next) => {
-    const { error } = schema.validate(req.body, { abortEarly: false}); // This validates and collects all errors
+  const { value, error } = schema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true, // remove unknown keys
+  });
 
-    if (error) {
-        const detailedMessage = error.details.map(err => err.message); // Extract and join error messages
-        return res.status(400).json({ message: detailedMessage }) // Sends error response (400)
+  if (error) {
+    const messages = error.details.map((err) => err.message);
+    return res.status(400).json({ message: messages });
+  }
+
+  req.body = value; // cleaned data
+  next();
+};
+
+// Middleware for validating URL param :id as ObjectId
+const validateParamId =
+  (paramName = "id") =>
+  (req, res, next) => {
+    if (!Types.ObjectId.isValid(req.params[paramName])) {
+      return res.status(400).json({ message: `Invalid ${paramName} ObjectId` });
     }
-    next(); // If the validation passes, continue to the next middleware/controller    
-};
+    next();
+  };
 
-// -- Exportable Validation Middleware --
-
-// Middleware to validate data when creating a new booking
-const validateBookingCreate = validate(createBookingSchema);
-
-// Middleware to validate data when updating an existing booking
-const validateBookingUpdate = validate(updateBookingSchema);
-
+// ----------------- Exported Middleware -----------------
 module.exports = {
-    validateBookingCreate,
-    validateBookingUpdate
+  validateBookingCreate: validate(createBookingSchema),
+  validateBookingUpdate: validate(updateBookingSchema),
+  validateParamId,
 };
-
-
