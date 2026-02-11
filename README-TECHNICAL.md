@@ -295,23 +295,16 @@ This proof-of-concept does not implement room inventory management.
 Each room category is treated as infinitely available.
 
 The system validates:
+
 - Guest count vs room capacity
 - Date validity
 - Pricing calculation
 
 It does NOT:
+
 - Prevent double bookings
 - Track number of physical rooms
 - Enforce availability constraints
-
-
-**Known Issue:**
-
--The possibility of a race condition where two users could book the same room for the same dates at the same time is not addressed in the current implementation but is acknowledged as a limitation for the proof-of-concept.
-
-**Future Considerations**:
-
-- In a production system, this race condition would be addressed using **MongoDB transactions** or **inventory locking** to make room availability checks and bookings atomic operations.
 
 ---
 
@@ -343,10 +336,6 @@ await Booking.updateMany({}, { status: "cancelled" });
 ---
 
 ### **Room Availability & Booking Race Condition: Future Considerations**
-
-In this proof-of-concept, **room availability** is checked by querying overlapping bookings at the time of booking creation. However, since availability checks and bookings are not wrapped in a single atomic transaction, there exists a potential **race condition** where two users could book the same room at the same time.
-
-**Possible improvements**:
 
 - **MongoDB Transactions**: Implementing MongoDB transactions would ensure atomicity between availability checks and booking creation, preventing race conditions.
 - **Pessimistic Locking**: Locking the room’s availability during the booking process could ensure that only one user can book a room for a specific date range.
