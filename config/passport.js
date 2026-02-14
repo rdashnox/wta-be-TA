@@ -2,7 +2,7 @@ const passport = require("passport");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const config = require("../config/config");
 const User = require("../models/User");
-//const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 // ======================
 // JWT STRATEGY
@@ -28,31 +28,48 @@ passport.use(
 // ======================
 // GOOGLE OAUTH STRATEGY
 // ======================
-/* passport.use(
+passport.use(
   "google",
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
+      clientID: config.googleClientId,
+      clientSecret: config.googleClientSecret,
+      callbackURL: "/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        const email = profile.emails[0].value.toLowerCase().trim();
+
+        // Check if user already exists with googleId
         let user = await User.findOne({ googleId: profile.id });
 
-        if (!user) {
-          user = await User.create({
-            googleId: profile.id,
-            email: profile.emails[0].value,
-          });
+        if (user) return done(null, user);
+
+        // If not, check if email already exists (local account)
+        user = await User.findOne({ email });
+
+        if (user) {
+          // Attach googleId to existing account
+          user.googleId = profile.id;
+          user.provider = "google";
+          await user.save();
+          return done(null, user);
         }
 
-        done(null, user);
+        // Create new Google user
+        user = await User.create({
+          email,
+          googleId: profile.id,
+          provider: "google",
+        });
+
+        return done(null, user);
       } catch (err) {
-        done(err);
+        done(err, false);
       }
     }
   )
-); */
+);
+
 
 module.exports = passport;
