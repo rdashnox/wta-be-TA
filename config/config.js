@@ -7,6 +7,8 @@ const config = {
   jwtSecret: process.env.JWT_SECRET,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   isTest: process.env.NODE_ENV === "test",
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
 };
 
 if (!config.mongoUri || !config.jwtSecret) {

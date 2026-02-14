@@ -72,6 +72,13 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Prevent Local Login for Google Users
+    if (user.provider === "google") {
+      return res.status(400).json({
+        message: "Please login with Google",
+      });
+    }
+
     const access = jwt.sign(
       { id: user._id.toString(), email: user.email, role: user.role },
       config.jwtSecret,
