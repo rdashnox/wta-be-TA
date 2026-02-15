@@ -122,10 +122,53 @@ const validateParamId =
     }
     next();
   };
+// ----------------- KRIZIA'S ASSIGNMENT SCHEMAS -----------------
+
+// Validates room type, pricing, and guest capacity
+const roomSchema = Joi.object({
+  type: Joi.string().required(),
+  price: Joi.number().min(0).required(),
+  maxGuests: Joi.number().integer().min(1).required(),
+  images: Joi.array().items(Joi.string())
+});
+
+// Validates user inquiry details and contact email
+const contactSchema = Joi.object({
+  name: Joi.string().min(2).max(50).required(),
+  email: Joi.string().email().lowercase().required(),
+  subject: Joi.string().allow(""),
+  message: Joi.string().min(5).required()
+});
+
+// Validates new user credentials and account details
+const registerSchema = Joi.object({
+  email: Joi.string().email().lowercase().required(),
+  password: Joi.string().min(6).required(),
+  firstName: Joi.string().optional(),
+  lastName: Joi.string().optional()
+});
+
+// Validates login credentials for existing users
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required()
+});
+
+// Validates email format for newsletter sign-ups
+const subscriptionSchema = Joi.object({
+  email: Joi.string().email().lowercase().required()
+});
 
 // ----------------- Exported Middleware -----------------
 module.exports = {
   validateBookingCreate: validate(createBookingSchema),
   validateBookingUpdate: validate(updateBookingSchema),
   validateParamId,
+
+// Krizia's Validators
+  validateRoom: validate(roomSchema),
+  validateContact: validate(contactSchema),
+  validateRegister: validate(registerSchema),
+  validateLogin: validate(loginSchema),
+  validateSubscription: validate(subscriptionSchema)
 };

@@ -10,10 +10,13 @@ const {
 
 const { requireRole } = require("../middleware/permissions");
 
+// Import  subscription validator
+const { validateSubscription } = require("../middleware/subscriptionValidator");
+
 const router = express.Router();
 
-// Public: Subscribe and unsubscribe
-router.post("/subscribe", subscribe);
+// Public: Subscribe and unsubscribe - Added validateSubscription 
+router.post("/subscribe", validateSubscription, subscribe);
 router.patch("/unsubscribe", unsubscribe);
 
 // Admin only: Protected routes

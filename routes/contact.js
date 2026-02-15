@@ -9,10 +9,13 @@ const {
 
 const { requireRole } = require("../middleware/permissions");
 
+// Import contact validator
+const { validateContact } = require("../middleware/contactValidator");
+
 const router = express.Router();
 
-// Public: Create contact message
-router.post("/", createContactMessage);
+// Public: Create contact message - added validateContact
+router.post("/", validateContact, createContactMessage);
 
 // Admin only: Protected routes
 router.use(passport.authenticate("jwt", { session: false }));
