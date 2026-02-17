@@ -10,7 +10,7 @@ const {
 const { requireRole } = require("../middleware/permissions");
 
 // Import contact validator
-const { validateContact } = require("../middleware/contactValidator");
+const { validateContact } = require("../middleware/validation");
 
 const router = express.Router();
 

@@ -14,9 +14,10 @@ const { requireRole } = require("../middleware/permissions");
 const { validateParamId } = require("../middleware/validation");
 
 // New validator imported from your separate file
-const { validateRoom } = require("../middleware/roomValidator");
+const { validateRoom } = require("../middleware/validation");
 
 const router = express.Router();
+
 // POST route: Validates admin role, THEN validates room data, THEN creates room
 router.post("/", validateRoom, createRoom);
 

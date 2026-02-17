@@ -10,8 +10,8 @@ const {
 
 const { requireRole } = require("../middleware/permissions");
 
-// Import  subscription validator
-const { validateSubscription } = require("../middleware/subscriptionValidator");
+// Import subscription validator
+const { validateSubscription } = require("../middleware/validation");
 
 const router = express.Router();
 

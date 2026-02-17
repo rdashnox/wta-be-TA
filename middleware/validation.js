@@ -140,12 +140,10 @@ const contactSchema = Joi.object({
   message: Joi.string().min(5).required()
 });
 
-// Validates new user credentials and account details
+// Validates new user email and password
 const registerSchema = Joi.object({
   email: Joi.string().email().lowercase().required(),
-  password: Joi.string().min(6).required(),
-  firstName: Joi.string().optional(),
-  lastName: Joi.string().optional()
+  password: Joi.string().min(6).required()
 });
 
 // Validates login credentials for existing users
