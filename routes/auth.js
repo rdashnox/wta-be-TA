@@ -4,10 +4,15 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 
 const { register, login } = require("../controllers/auth.controller");
+
+// Import auth validator
+const { validateRegister, validateLogin } = require("../middleware/validation");
+
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
+// Add validation before the controllers
+router.post("/register", validateRegister, register);
+router.post("/login", validateLogin, login);
 
 router.get(
   "/google",

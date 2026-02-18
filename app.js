@@ -21,7 +21,7 @@ const app = express();
 
 // Connect to database
 connectDB();
-
+ 
 // middleware order
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(
@@ -44,6 +44,7 @@ app.use("/api/rooms", roomRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/subscription", subscriptionRouter);
 app.use("/api/booking", bookingRouter);
+
 
 // 404 handler
 app.use((req, res, next) => {
