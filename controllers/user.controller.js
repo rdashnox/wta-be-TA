@@ -19,14 +19,36 @@ exports.deleteAccount = async (req, res) => {
   try {
     const targetId = req.params.id;
 
+    // Check if the user exists first
     const user = await User.findById(targetId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    // Mongoose pre('remove') hook auto-deletes bookings
-    await user.deleteOne();
+    // Protection: Prevent an admin from deleting themselves via this route
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: "You cannot delete your own admin account here." });
+    }
 
-    res.status(200).json({ message: "User deleted!" });
+    // Use deleteOne() or remove()
+    await User.deleteOne({ _id: targetId });
+
+    res.status(200).json({ message: "User deleted successfully!" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Delete Error:", error); // This helps you see the REAL error in your terminal
+    res.status(500).json({ message: "Server error during deletion" });
+  }
+};
+
+// --- NEW CODE ADDED BELOW ---
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    // This fetches all accounts from the database
+    // .select("-password") ensures we don't send sensitive hashes to the frontend
+    const users = await User.find({}).select("-password");
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

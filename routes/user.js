@@ -1,10 +1,17 @@
 const express = require("express");
 const passport = require("passport");
-const { getProfile, deleteAccount } = require("../controllers/user.controller");
+// 1. Added getAllUsers to the list of imports
+const { getProfile, deleteAccount, getAllUsers } = require("../controllers/user.controller");
 const { validateParamId } = require("../middleware/validation");
-const { requireOwnership } = require("../middleware/permissions");
 
 const router = express.Router();
+
+// 2. Added the GET / route to fetch all users
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  getAllUsers
+);
 
 router.get(
   "/profile",
@@ -14,9 +21,9 @@ router.get(
 
 router.delete(
   "/:id",
-  validateParamId("id"),
-  requireOwnership("User", "_id", ["admin"]),
-  deleteAccount,
+  passport.authenticate("jwt", { session: false }), 
+  validateParamId("id"),                            
+  deleteAccount                                    
 );
 
 module.exports = router;
