@@ -4,9 +4,10 @@ const User = require("../models/User");
 const Room = require("../models/Room");
 const { calculatePricing } = require("../services/pricingService");
 const connectDB = require("../config/db");
+const logger = require("../utils/logger");
 
 if (process.env.NODE_ENV !== "development") {
-  console.error("Seeder only in development!");
+  logger.error("Seeder only in development!");
   process.exit(1);
 }
 
@@ -28,8 +29,8 @@ const userBookings = [
     firstName: "Anna",
     lastName: "Perez",
     phone: "+639282345678",
-    checkInDate: "2026-03-01",
-    checkOutDate: "2026-03-08",
+    checkInDate: "2026-03-09",
+    checkOutDate: "2026-03-16",
     adults: 2,
     children: 4,
     boardType: "Half-board",
@@ -40,8 +41,8 @@ const userBookings = [
     firstName: "Juan",
     lastName: "Dela Cruz",
     phone: "+639393456789",
-    checkInDate: "2026-02-12",
-    checkOutDate: "2026-02-18",
+    checkInDate: "2026-03-22",
+    checkOutDate: "2026-03-29",
     adults: 2,
     children: 0,
     boardType: "Half-board",
@@ -60,18 +61,18 @@ const seedBookings = async () => {
     const rooms = await Room.find();
 
     if (users.length !== 3) {
-      console.error(
+      logger.error(
         `Need 3 users! Found ${users.length}. Run: npm run seed:users`,
       );
       process.exit(1);
     }
 
     if (rooms.length === 0) {
-      console.error("No rooms! Run: npm run seed:rooms");
+      logger.error("No rooms! Run: npm run seed:rooms");
       process.exit(1);
     }
 
-    console.log(`Found ${users.length} users, ${rooms.length} rooms`);
+    logger.info(`Found ${users.length} users, ${rooms.length} rooms`);
 
     // CREATE BOOKINGS WITH PRICING SERVICE
     let createdCount = 0;
@@ -111,19 +112,19 @@ const seedBookings = async () => {
 
       await Booking.create(booking);
 
-      console.log(
+      logger.info(
         `${bookingData.firstName} ${bookingData.lastName} → ${room.roomNumber}`,
       );
-      console.log(
+      logger.info(
         `   ${pricing.nights} nights | ₱${pricing.totalCost.toLocaleString()} TOTAL`,
       );
       createdCount++;
     }
 
-    console.log(`${createdCount} bookings seeded!`);
+    logger.info(`${createdCount} bookings seeded!`);
     process.exit(0);
   } catch (error) {
-    console.error("❌ Booking seeding failed:", error.message);
+    logger.error("❌ Booking seeding failed:", error.message);
     process.exit(1);
   }
 };

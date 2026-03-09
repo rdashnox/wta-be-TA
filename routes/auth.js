@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
+const { loginLimiter } = require("../middleware/rateLimiter");
 const config = require("../config/config");
 
 const { register, login } = require("../controllers/auth.controller");
@@ -10,9 +11,9 @@ const { validateRegister, validateLogin } = require("../middleware/validation");
 
 const router = express.Router();
 
-// Add validation before the controllers
-router.post("/register", validateRegister, register);
-router.post("/login", validateLogin, login);
+// Add validation before the controllers and apply rate limiter to both register and login routes
+router.post("/register", loginLimiter, validateRegister, register);
+router.post("/login", loginLimiter, validateLogin, login);
 
 router.get(
   "/google",

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("./config");
+const logger = require("../utils/logger");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
 const connectDB = async () => {
@@ -9,18 +10,21 @@ const connectDB = async () => {
     if (config.isTest) {
       const mongoServer = await MongoMemoryServer.create();
       mongoUri = mongoServer.getUri();
-      console.log("Using in-memory MongoDB for testing 🧪");
+      logger.ifo("Using in-memory MongoDB for testing 🧪");
     } else if (config.env === "development") {
-      console.log(`Connecting to MongoDB on DEV mode 🌱`);
+      logger.info(`Connecting to MongoDB on DEV mode 🌱`);
     } else {
-      console.log("MongoDB connected 🚀");
+      logger.info("MongoDB connected 🚀");
     }
 
     await mongoose.connect(mongoUri);
   } catch (error) {
-    console.error("DB connection error:", error);
-    process.exit(1);
+    logger.error("MongoDB connection failed. Retrying in 5 seconds...");
+
+    // Retry connection after 5 seconds
+    setTimeout(connectDB, 5000);
   }
 };
 
 module.exports = connectDB;
+

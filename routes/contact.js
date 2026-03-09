@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const { contactLimiter } = require("../middleware/rateLimiter");
 
 const {
   createContactMessage,
@@ -14,8 +15,8 @@ const { validateContact } = require("../middleware/validation");
 
 const router = express.Router();
 
-// Public: Create contact message - added validateContact
-router.post("/", validateContact, createContactMessage);
+// Public: Create contact message - added validateContact and contactLimiter
+router.post("/", contactLimiter, validateContact, createContactMessage); // Apply rate limiter to contact form submissions
 
 // Admin only: Protected routes
 router.use(passport.authenticate("jwt", { session: false }));
