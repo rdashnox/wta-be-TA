@@ -139,14 +139,3 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
-/**
- * Notes for scalability & performance:
- *
- * 1. MongoDB queries should use .lean() where possible (e.g., Room.find().lean()).
- * 2. Use indexes on frequently filtered fields (you already did for bookings).
- * 3. Consider horizontal scaling with Node.js clustering or PM2.
- * 4. Cache read-heavy endpoints (Redis or apicache).
- * 5. Enable HTTP/2 on production server for faster multiplexed requests.
- * 6. Set secure cookies in production: { httpOnly: true, secure: true, sameSite: 'lax' }.
- * 7. Monitor memory & request bottlenecks (e.g., large JSON payloads >10kb).
- */

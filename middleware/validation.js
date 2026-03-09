@@ -109,7 +109,7 @@ const validate = (schema) => (req, res, next) => {
     return res.status(400).json({ message: messages });
   }
 
-  req.body = value; // cleaned data
+  req.body = value; 
   next();
 };
 
@@ -122,7 +122,6 @@ const validateParamId =
     }
     next();
   };
-// ----------------- KRIZIA'S ASSIGNMENT SCHEMAS -----------------
 
 // Validates room type, pricing, and guest capacity
 const roomSchema = Joi.object({
@@ -152,12 +151,11 @@ const loginSchema = Joi.object({
   password: Joi.string().required()
 });
 
-// Validates email format for newsletter sign-ups
 const subscriptionSchema = Joi.object({
   email: Joi.string().email().lowercase().required()
 });
 
-// ----------------- Exported Middleware -----------------
+
 module.exports = {
   validateBookingCreate: validate(createBookingSchema),
   validateBookingUpdate: validate(updateBookingSchema),
