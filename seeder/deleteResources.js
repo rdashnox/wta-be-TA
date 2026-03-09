@@ -6,11 +6,6 @@ const Subscription = require("../models/Subscription");
 const Contact = require("../models/Contact");
 const connectDB = require("../config/db");
 
-/*
- * Seeder intentionally hard-deletes all data to reset development database
- *
- */
-
 if (process.env.NODE_ENV !== "development") {
   console.error("Seeder can only run in development!");
   process.exit(1);
