@@ -1,4 +1,5 @@
 require("dotenv").config();
+const logger = require("../utils/logger");
 
 const config = {
   env: process.env.NODE_ENV || "development",
@@ -12,9 +13,9 @@ const config = {
 };
 
 if (!config.mongoUri || !config.jwtSecret) {
-  console.error("ERROR: Essential environment variables missing in .env!");
+  logger.error("ERROR: Essential environment variables missing in .env!");
   process.exit(1);
 }
 
-console.log(`Environment variables loaded (${config.env})`);
+logger.info(`Environment variables loaded (${config.env})`);
 module.exports = config;

@@ -49,6 +49,8 @@ coverage
 
 .grunt
 
+.gitingestignore
+
 bower_components
 
 .lock-wscript
@@ -139,3 +141,8 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+
+*.txt
+
+.venv
+

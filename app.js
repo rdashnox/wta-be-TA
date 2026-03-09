@@ -6,9 +6,12 @@ const passport = require("./config/passport");
 const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
+const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
-const logger = require("morgan");
+const morgan = require("morgan");
+const logger = require("./utils/logger");
 const connectDB = require("./config/db");
+
 
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
@@ -22,8 +25,8 @@ const app = express();
 // Connect to database
 connectDB();
  
-// middleware order
 app.use(helmet({ contentSecurityPolicy: false }));
+app.use(mongoSanitize());
 app.use(
   cors({
     origin: config.frontendUrl,
@@ -35,7 +38,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
-app.use(logger("combined"));
+app.use(
+  morgan("combined", {
+    stream: {
+      write: (message) => logger.info(message.trim()), 
+    },
+  })
+);
 
 // Routes
 app.use("/api/auth", authRouter);
@@ -53,7 +62,7 @@ app.use((req, res, next) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error("Server Error:", err);
+  logger.error("Server Error:", err);
   res.status(err.status || 500).json({
     message:
       process.env.NODE_ENV === "production" ? "Server error" : err.message,

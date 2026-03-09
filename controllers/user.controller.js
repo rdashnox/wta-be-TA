@@ -1,5 +1,6 @@
 const Booking = require("../models/Booking");
 const User = require("../models/User");
+const logger = require("../utils/logger");
 
 exports.getProfile = async (req, res) => {
   if (!req.user) {
@@ -35,7 +36,7 @@ exports.deleteAccount = async (req, res) => {
 
     res.status(200).json({ message: "User deleted successfully!" });
   } catch (error) {
-    console.error("Delete Error:", error); // This helps you see the REAL error in your terminal
+    logger.error("Delete Error:", error); // This helps you see the REAL error in your terminal
     res.status(500).json({ message: "Server error during deletion" });
   }
 };

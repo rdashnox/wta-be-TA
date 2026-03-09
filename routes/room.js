@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const apicache = require("apicache");
 
 const {
   getAllRooms,
@@ -11,28 +12,51 @@ const {
 } = require("../controllers/room.controller");
 
 const { requireRole } = require("../middleware/permissions");
-const { validateParamId } = require("../middleware/validation");
-
-// New validator imported from your separate file
-const { validateRoom } = require("../middleware/validation");
+const { validateParamId, validateRoom } = require("../middleware/validation");
 
 const router = express.Router();
 
-// POST route: Validates admin role, THEN validates room data, THEN creates room
-router.post("/", validateRoom, createRoom);
+const cache = apicache.middleware;
 
-// Public routes
-router.get("/", getAllRooms);
-router.get("/:id", validateParamId("id"), getRoomById);
-router.get("/:id/price", validateParamId("id"), getRoomPricePreview);
+// --- Middleware for client caching ---
+const clientCache = (req, res, next) => {
+  res.set("Cache-Control", "public, max-age=300"); // 5 minutes
+  next();
+};
 
-// Admin-only routes
+// --- Public routes with caching ---
+router.get("/", clientCache, cache("5 minutes"), getAllRooms);
+router.get(
+  "/:id",
+  validateParamId("id"),
+  clientCache,
+  cache("5 minutes"),
+  getRoomById,
+);
+router.get(
+  "/:id/price",
+  validateParamId("id"),
+  clientCache,
+  cache("5 minutes"),
+  getRoomPricePreview,
+);
+
+// Protected routes — Admin only
 router.use(passport.authenticate("jwt", { session: false }));
 
-
-// PUT route: Validates ID, admin role, room data, THEN updates room
-router.put("/:id", validateParamId(), requireRole(["admin"]), validateRoom, updateRoom);
-
-router.delete("/:id", validateParamId(), requireRole(["admin"]), deleteRoom);
+router.post("/", requireRole(["admin"]), validateRoom, createRoom);
+router.put(
+  "/:id",
+  validateParamId("id"),
+  requireRole(["admin"]),
+  validateRoom,
+  updateRoom,
+);
+router.delete(
+  "/:id",
+  validateParamId("id"),
+  requireRole(["admin"]),
+  deleteRoom,
+);
 
 module.exports = router;

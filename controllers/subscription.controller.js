@@ -1,4 +1,5 @@
 const Subscription = require("../models/Subscription");
+const logger = require("../utils/logger");
 
 exports.subscribe = async (req, res) => {
   try {
@@ -53,7 +54,7 @@ exports.sendNewsletter = async (req, res) => {
     // Only send to active subscribers
     const recipients = await Subscription.find({ status: "active" });
 
-    console.log(`Sending newsletter to ${recipients.length} recipients.`);
+    logger.info(`Sending newsletter to ${recipients.length} recipients.`);
 
     res.status(200).json({
       message: "Newsletter simulation successful",

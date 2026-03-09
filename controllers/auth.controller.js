@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
+const logger = require("../utils/logger");
 
 exports.register = async (req, res) => {
   try {
@@ -54,7 +55,7 @@ exports.register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Register error:", error);
+    logger.error("Register error:", error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -90,7 +91,7 @@ exports.login = async (req, res) => {
       user: { id: user._id.toString(), email: user.email, role: user.role },
     });
   } catch (error) {
-    console.error("Login error:", error.message);
+    logger.error("Login error:", error.message);
     res.status(400).json({ message: "Server error" });
   }
 };
