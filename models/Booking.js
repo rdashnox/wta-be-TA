@@ -60,6 +60,10 @@ bookingSchema.index({
   checkOutDate: 1,
 });
 
+bookingSchema.index({ user: 1 });
+bookingSchema.index({ status: 1 });
+bookingSchema.index({ createdAt: -1 });
+
 // Clean JSON for frontend (hides MongoDB internals)
 bookingSchema.set("toJSON", {
   transform: (doc, ret) => {

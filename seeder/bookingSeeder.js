@@ -113,7 +113,7 @@ const seedBookings = async () => {
       await Booking.create(booking);
 
       logger.info(
-        `${bookingData.firstName} ${bookingData.lastName} → ${room.roomNumber}`,
+        `${bookingData.firstName} ${bookingData.lastName} → ${room.type} from ${bookingData.checkInDate} to ${bookingData.checkOutDate}`,
       );
       logger.info(
         `   ${pricing.nights} nights | ₱${pricing.totalCost.toLocaleString()} TOTAL`,

@@ -146,3 +146,6 @@ $RECYCLE.BIN/
 
 .venv
 
+.repo_map_structure.json
+.repo-map-cache.db
+.repomapignore

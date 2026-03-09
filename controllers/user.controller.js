@@ -20,18 +20,18 @@ exports.deleteAccount = async (req, res) => {
   try {
     const targetId = req.params.id;
 
-    // Check if the user exists first
     const user = await User.findById(targetId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Protection: Prevent an admin from deleting themselves via this route
+    // Protection: Prevent an admin from deleting themselves
     if (user._id.toString() === req.user._id.toString()) {
-      return res.status(400).json({ message: "You cannot delete your own admin account here." });
+      return res
+        .status(400)
+        .json({ message: "You cannot delete your own admin account here." });
     }
 
-    // Use deleteOne() or remove()
     await User.deleteOne({ _id: targetId });
 
     res.status(200).json({ message: "User deleted successfully!" });
@@ -41,14 +41,38 @@ exports.deleteAccount = async (req, res) => {
   }
 };
 
-// --- NEW CODE ADDED BELOW ---
-
 exports.getAllUsers = async (req, res) => {
   try {
-    // This fetches all accounts from the database
-    // .select("-password") ensures we don't send sensitive hashes to the frontend
-    const users = await User.find({}).select("-password");
-    res.json(users);
+    const { page, limit } = req.query;
+
+    // Old behavior (no pagination)
+    if (!page && !limit) {
+      const users = await User.find({}).select("-password");
+      return res.json(users);
+    }
+
+    // Pagination mode
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const [users, total] = await Promise.all([
+      User.find({})
+        .select("-password")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize),
+
+      User.countDocuments(),
+    ]);
+
+    res.json({
+      page: pageNumber,
+      limit: pageSize,
+      total,
+      pages: Math.ceil(total / pageSize),
+      data: users,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,20 +1,3 @@
-/**
- * Booking routes
- *
- * Uses:
- *   - Passport JWT authentication
- *   - Role & ownership middleware
- *   - Joi validation middleware (generic)
- *   - Domain-specific booking schemas
- *
- * Endpoints:
- *   GET /all        -> Admin only: view all bookings
- *   POST /          -> User: create booking
- *   GET /           -> User: view own bookings
- *   PUT /:id        -> Owner/Admin: update booking
- *   DELETE /:id     -> Owner/Admin: cancel booking
- */
-
 const express = require("express");
 const passport = require("passport");
 const bookingController = require("../controllers/booking.controller");
@@ -28,6 +11,100 @@ const {
 } = require("../middleware/validation");
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Bookings
+ *   description: Booking management routes
+ */
+
+/**
+ * @swagger
+ * /api/booking:
+ *   get:
+ *     summary: Get all bookings (Admin only)
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, cancelled, completed]
+ *         description: Optional status filter
+ *     responses:
+ *       200:
+ *         description: List of bookings
+ *       401:
+ *         description: Unauthorized
+ *
+ *   post:
+ *     summary: Create a new booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Booking'
+ *     responses:
+ *       201:
+ *         description: Booking created
+ *       400:
+ *         description: Validation error
+ */
+
+/**
+ * @swagger
+ * /api/booking/{id}:
+ *   put:
+ *     summary: Update a booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Booking ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Booking'
+ *     responses:
+ *       200:
+ *         description: Booking updated
+ *       400:
+ *         description: Validation error
+ *
+ *   delete:
+ *     summary: Cancel a booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Booking ID
+ *     responses:
+ *       200:
+ *         description: Booking cancelled
+ *       400:
+ *         description: Already cancelled
+ *       404:
+ *         description: Booking not found
+ */
 
 // JWT authentication for all booking routes
 router.use(passport.authenticate("jwt", { session: false }));
