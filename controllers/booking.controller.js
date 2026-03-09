@@ -20,8 +20,36 @@ exports.createBooking = async (req, res) => {
  */
 exports.getMyBookings = async (req, res) => {
   try {
-    const bookings = await bookingService.getUserBookings(req.user._id);
-    res.json(bookings);
+    const { page, limit } = req.query;
+
+    // Old behavior (no pagination)
+    if (!page && !limit) {
+      const bookings = await bookingService.getUserBookings(req.user._id);
+      return res.json(bookings);
+    }
+
+    // Pagination enabled
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const [bookings, total] = await Promise.all([
+      Booking.find({ user: req.user._id })
+        .populate("room")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize),
+
+      Booking.countDocuments({ user: req.user._id }),
+    ]);
+
+    res.json({
+      page: pageNumber,
+      limit: pageSize,
+      total,
+      pages: Math.ceil(total / pageSize),
+      data: bookings,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -33,17 +61,43 @@ exports.getMyBookings = async (req, res) => {
 exports.getAllBookings = async (req, res) => {
   try {
     const filter = {};
+    const { page, limit, status } = req.query;
 
-    // Optional status filtering
-    if (req.query.status) {
-      filter.status = req.query.status;
+    if (status) {
+      filter.status = status;
     }
 
-    const bookings = await Booking.find(filter)
-      .populate(["room", "user"])
-      .sort({ createdAt: -1 });
+    // Old behavior (no pagination)
+    if (!page && !limit) {
+      const bookings = await Booking.find(filter)
+        .populate(["room", "user"])
+        .sort({ createdAt: -1 });
 
-    res.json(bookings);
+      return res.json(bookings);
+    }
+
+    // Pagination
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const [bookings, total] = await Promise.all([
+      Booking.find(filter)
+        .populate(["room", "user"])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize),
+
+      Booking.countDocuments(filter),
+    ]);
+
+    res.json({
+      page: pageNumber,
+      limit: pageSize,
+      total,
+      pages: Math.ceil(total / pageSize),
+      data: bookings,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

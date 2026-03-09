@@ -10,7 +10,7 @@ const connectDB = async () => {
     if (config.isTest) {
       const mongoServer = await MongoMemoryServer.create();
       mongoUri = mongoServer.getUri();
-      logger.ifo("Using in-memory MongoDB for testing 🧪");
+      logger.info("Using in-memory MongoDB for testing 🧪");
     } else if (config.env === "development") {
       logger.info(`Connecting to MongoDB on DEV mode 🌱`);
     } else {

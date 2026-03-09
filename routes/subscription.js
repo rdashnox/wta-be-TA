@@ -15,7 +15,56 @@ const { validateSubscription } = require("../middleware/validation");
 
 const router = express.Router();
 
-// Public: Subscribe and unsubscribe - Added validateSubscription 
+/**
+ * @swagger
+ * tags:
+ *   name: Subscription
+ *   description: Newsletter subscription routes
+ */
+
+/**
+ * @swagger
+ * /api/subscription:
+ *   post:
+ *     summary: Subscribe to newsletter
+ *     tags: [Subscription]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: subscriber@example.com
+ *     responses:
+ *       201:
+ *         description: Subscribed successfully
+ *       400:
+ *         description: Validation error or already subscribed
+ *
+ *   delete:
+ *     summary: Unsubscribe from newsletter
+ *     tags: [Subscription]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: subscriber@example.com
+ *     responses:
+ *       200:
+ *         description: Unsubscribed successfully
+ *       404:
+ *         description: Subscription not found
+ */
+
+// Public: Subscribe and unsubscribe - Added validateSubscription
 router.post("/subscribe", validateSubscription, subscribe);
 router.patch("/unsubscribe", unsubscribe);
 
