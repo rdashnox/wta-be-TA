@@ -6,7 +6,6 @@ const config = require("../config/config");
 
 const { register, login } = require("../controllers/auth.controller");
 
-// Import auth validator
 const { validateRegister, validateLogin } = require("../middleware/validation");
 
 const router = express.Router();

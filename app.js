@@ -35,8 +35,6 @@ const app = express();
 // Connect to database
 connectDB();
 
-// --- GLOBAL MIDDLEWARES ---
-
 // Set security headers
 helmet.contentSecurityPolicy({
   directives: {
