@@ -32,13 +32,22 @@ exports.getMyBookings = async (req, res) => {
  */
 exports.getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate(["room", "user"]);
+    const filter = {};
+
+    // Optional status filtering
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+
+    const bookings = await Booking.find(filter)
+      .populate(["room", "user"])
+      .sort({ createdAt: -1 });
+
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 /**
  * Update own booking (User) or any booking (Admin)
  */
