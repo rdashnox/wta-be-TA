@@ -6,6 +6,8 @@ It explains the **system architecture, database design, authentication flow, and
 
 # Table of Contents
 
+- [Database Design](#database-design)
+
 - [System Architecture](#system-architecture)
   - [Layer Responsibilities](#layer-responsibilities)
   - [Routes](#routes)
@@ -36,13 +38,9 @@ It explains the **system architecture, database design, authentication flow, and
   - [Password Security](#password-security)
 
 - [Error Handling](#error-handling)
-
 - [Logging](#logging)
-
 - [Development Tools](#development-tools)
-
 - [Known Limitations](#known-limitations)
-
 - [Future Improvements](#future-improvements)
 
 - [Evaluator Testing Guide](#evaluator-testing-guide)
@@ -56,6 +54,10 @@ It explains the **system architecture, database design, authentication flow, and
   - [Seeder Security Restriction](#seeder-security-restriction)
 
 ---
+
+# Database Design
+
+Database documentation is available in [this ink](https://github.com/imperionite/wta-be/blob/main/ERD_AND_DATA_DICTIONARY.md).
 
 # System Architecture
 
@@ -84,7 +86,7 @@ Routes define API endpoints and attach middleware for authentication and validat
 Example:
 
 ```
-POST /api/bookings
+POST /api/booking
 GET /api/rooms
 ```
 
@@ -512,7 +514,7 @@ NODE_ENV=development
 PORT=3000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secure_secret
-FRONTEND_URL=http://localhost:4123
+FRONTEND_URL=http://localhost:5173
 ```
 
 If testing Google OAuth, also add:
@@ -700,8 +702,8 @@ POST /api/auth/login
 
 ```
 GET /api/users/profile
-POST /api/bookings
-GET /api/bookings
+POST /api/booking
+GET /api/booking
 ```
 
 ---
