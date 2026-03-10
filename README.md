@@ -1,127 +1,720 @@
-# WTA-BE
+# WTA-BE Technical Documentation
 
-This project is the **backend extension** of the Skye Suites static hotel website (HTML/CSS/JS). It provides **dynamic features** such as booking management, contact handling, and subscriptions using a Node.js/Express API connected to MongoDB. For the frontend part of the project, see the [wta-fe repository](https://github.com/imperionite/wta-fe).
+This document provides detailed technical documentation for the **Skye Suites Hotel API backend**.
 
-For technical version of this document, see [README-TECHNICAL](https://github.com/imperionite/wta-be/blob/main/README-TECHNICAL.md)
+It explains the **system architecture, database design, authentication flow, and business rules** implemented in the backend system.
+
+# Table of Contents
+
+- [System Architecture](#system-architecture)
+  - [Layer Responsibilities](#layer-responsibilities)
+  - [Routes](#routes)
+  - [Controllers](#controllers)
+  - [Services](#services)
+  - [Models](#models)
+  - [Middleware](#middleware)
+
+- [Authentication System](#authentication-system)
+  - [Login Flow](#login-flow)
+  - [JWT Payload Structure](#jwt-payload-structure)
+
+- [Role-Based Access Control](#role-based-access-control)
+
+- [Booking System Design](#booking-system-design)
+  - [Booking Creation Rules](#booking-creation-rules)
+  - [Room Availability Validation](#room-availability-validation)
+  - [Concurrency Protection](#concurrency-protection)
+
+- [Pricing System](#pricing-system)
+
+- [Database Design](#database-design)
+  - [Relationships](#relationships)
+  - [Indexing Strategy](#indexing-strategy)
+
+- [Security Architecture](#security-architecture)
+  - [Security Middleware](#security-middleware)
+  - [Password Security](#password-security)
+
+- [Error Handling](#error-handling)
+
+- [Logging](#logging)
+
+- [Development Tools](#development-tools)
+
+- [Known Limitations](#known-limitations)
+
+- [Future Improvements](#future-improvements)
+
+- [Evaluator Testing Guide](#evaluator-testing-guide)
+  - [Running the Application](#running-the-application)
+  - [Seeding Test Data](#seeding-test-data)
+  - [Test User Credentials](#test-user-credentials)
+  - [Authentication Example](#authentication-example)
+  - [Google OAuth Testing](#google-oauth-testing)
+  - [API Documentation](#api-documentation)
+  - [Recommended Testing Flow](#recommended-testing-flow)
+  - [Seeder Security Restriction](#seeder-security-restriction)
 
 ---
 
-## Overview
+# System Architecture
 
-The API enhances the original static website by enabling:
+The backend follows a **layered architecture** that separates responsibilities between routing, request handling, business logic, and persistence.
 
-- **User Authentication:** Secure guest accounts with JWT and role-based access control (user/admin)
-- **Booking System:** Rooms are treated as infinitely available; availability is derived from bookings rather than a fixed inventory.
-- **Contact & Subscription Management:** Store inquiries and newsletter subscriptions
-- **Admin Dashboard:** Oversight of reservations, messages, and subscribers
+```
+Client
+  ↓
+Routes
+  ↓
+Controllers
+  ↓
+Services
+  ↓
+Models
+  ↓
+MongoDB
+```
 
-This backend is **decoupled from the frontend** to allow focused learning in Node.js and REST API development while maintaining a static frontend.
+## Layer Responsibilities
 
----
+### Routes
 
-## Tech Stack
+Routes define API endpoints and attach middleware for authentication and validation.
 
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB (via Mongoose)
-- **Authentication:** JWT, Passport.js
-- **Security & Middleware:** Helmet, CORS, Morgan, Cookie-Parser
-- **Testing:** Postman & Jest (unit tests)
+Example:
 
----
+```
+POST /api/bookings
+GET /api/rooms
+```
 
-## Highlights
+Routes are located in:
 
-- RESTful API endpoints with proper HTTP status codes
-- CRUD operations across multiple resources
-- Role-based access control (RBAC)
-- Password hashing and JWT-based authentication
-- Decoupled architecture for clear separation of concerns
-- Designed for **academic learning** but following industry-like best practices
-
----
-
-## Project Goals
-
-- Extend the existing static frontend with dynamic backend integration
-- Teach backend development to all group members
-- Provide **portfolio-ready exposure** to API design, authentication, and data management
+```
+routes/
+```
 
 ---
 
-## API Documentation
+### Controllers
 
-This section documents the manual API tests performed during our initial coding sprint.  
-Screenshots are provided for reference.
+Controllers process incoming requests and return responses.
 
-### Authentication Endpoint
+Responsibilities:
 
-![CREATE a User (Public) - POST /api/auth/register](<https://img.shields.io/badge/CREATE%20a%20User%20(Public)-POST%20%2Fapi%2Fauth%2Fregister-green?style=flat-square&logoSize=auto&color=%23105710>)
-![create a user](https://drive.google.com/uc?id=1Ng5mWvRN8POkCNUWE_4AzwxaiH2eMCL4)
+- Extract request data
+- Call business logic from services
+- Return formatted responses
 
-![User Login [Public] - POST /api/auth/login](<https://img.shields.io/badge/User%20Login%20(Public)-POST%20%2Fapi%2Fauth%2Flogin-green?style=flat-square&logoSize=auto&color=%23105710>)
-![user login](https://drive.google.com/uc?id=1hZJHga8MStceag-PM-ozAZLfLz7x_t9O)
+Controllers are located in:
 
-</br>
+```
+controllers/
+```
 
-### Room Endpoint
+Example controller flow:
 
-![CREATE a Room (Auth: Admin) - POST /api/rooms](<https://img.shields.io/badge/CREATE%20a%20Room%20(Auth%3A%20Admin)-POST%20%2Fapi%2Frooms-green?style=flat-square&logoSize=auto&color=%23105710>)
-![create a room](https://drive.google.com/uc?id=1mQYzTyIJTSwxw1RbidZFveIEqLMLsFA1)
+```
+req → controller → service → database → response
+```
 
-![FETCH All Rooms (Public)-GET /api/rooms](<https://img.shields.io/badge/FETCH%20All%20Rooms%20(Public)-GET%20%2Fapi%2Frooms-green?style=flat-square&logoSize=auto&color=%23105710>)
-![fetch all rooms](https://drive.google.com/uc?id=1C8WhtB-2ilxe6pICAgZ6j-XoWYd7fCsI)
+---
 
-![FETCH a Room by ID (Public) - GET /api/rooms/{room_id}](<https://img.shields.io/badge/FETCH%20a%20Room%20by%20ID%20(Public)-GET%20%2Fapi%2Frooms%2F%7Broom__id%7D-green?style=flat-square&logoSize=auto&color=%23105710>)
-![fetch a room by id](https://drive.google.com/uc?id=1AamsCN9ad0qY3jhqKLbIwAdvBAg5U1X2)
+### Services
 
-![FETCH a Room by ID After Deletion - GET /api/rooms/{room_id}](https://img.shields.io/badge/FETCH%20a%20Room%20by%20ID%20After%20Deletion%20-%20GET%20%2Fapi%2Frooms%2F%7Broom__id%7D-red?style=flat-square&logoSize=auto&color=%238A3020)
-![fetch a room by id after deletion](https://drive.google.com/uc?id=1xsJ2N56gFkJAJbdlrPbSu1hokN-b7a4U)
+Services contain **core business logic**.
 
-![Update a Room by ID (Auth: Admin) - PUT /api/rooms/{room_id}](<https://img.shields.io/badge/UPDATE%20a%20Room%20by%20ID%20(Auth%3A%20Admin)-PUT%20%2Fapi%2Frooms%2F%7Broom__id%7D-green?style=flat-square&logoSize=auto&color=%23105710>)
-![update a room by id](https://drive.google.com/uc?id=1vnbb1-ITlwyxtfcR9qQMQvkPcmIjDIDK)
+This layer ensures that controllers remain lightweight and that complex operations are reusable.
 
-![DELETE a Room by ID (Auth: Admin)-DELETE /api/rooms/{room_id}](<https://img.shields.io/badge/DELETE%20a%20Room%20by%20ID%20(Auth%3A%20Admin)-DELETE%20%2Fapi%2Frooms%2F%7Broom__id%7D-green?style=flat-square&logoSize=auto&color=%23105710>)
-![delete a room by id](https://drive.google.com/uc?id=1iS7JY1q7RqHRHQHNz_7TLICjGqkC7P7Z)
+Example responsibilities:
 
-</br>
+- booking creation
+- pricing calculations
+- availability checks
+- transactional operations
 
-### Booking Endpoint
+Services are located in:
 
-![CREATE a Booking (Auth)-POST /api/booking/](<https://img.shields.io/badge/CREATE%20a%20Booking%20(Auth)-POST%20%2Fapi%2Fbooking%2F-green?style=flat-square&logoSize=auto&color=%23105710>)
-![create a booking](https://drive.google.com/uc?id=1EZ7D_QzkNk4RXBxkFzqrgnattH-_FuBq)
+```
+services/
+```
 
-![CREATE a Booking for Already Occupied Dates (Auth)-POST /api/booking/](<https://img.shields.io/badge/CREATE%20a%20Booking%20for%20Already%20Occupied%20Dates%20(Auth)-POST%20%2Fapi%2Fbooking%2F-green?style=flat-square&logoSize=auto&color=%238A3020>)
-![create a booking for already occupied dates](https://drive.google.com/uc?id=1Xt8TfSLj0TjUt9S2fYRa15xWIl3wKlG6)
+Example service:
 
-![FETCH All Bookings (Auth: Admin)-GET /api/booking](<https://img.shields.io/badge/FETCH%20All%20Bookings%20(Auth%3A%20Admin)-GET%20%2Fapi%2Fbooking-green?style=flat-square&logoSize=auto&color=%23105710>)
-![fetch all bookings](https://drive.google.com/uc?id=1ul5OPMn2kxXBopfCbFWhhxnxsrOGQp_k)
+```
+services/bookingService.js
+```
 
-![DELETE a Booking (Auth)-DELETE /api/booking/{booking__id}](<https://img.shields.io/badge/DELETE%20a%20Booking%20(Auth)-DELETE%20%2Fapi%2Fbooking%2F%7Bbooking__id%7D-green?style=flat-square&logoSize=auto&color=%23105710>)
-![delete a booking](https://drive.google.com/uc?id=1macSn86ocDHZrrN4WgU2ILYxl9Ezf-vU)
+---
 
-</br>
+### Models
 
-### Contact Endpoint
+Models define MongoDB schemas using **Mongoose**.
 
-![CREATE a Contact Message (Public)-POST /api/contact](<https://img.shields.io/badge/CREATE%20a%20Contact%20Message%20(Public)-POST%20%2Fapi%2Fcontact-green?style=flat-square&logoSize=auto&color=%23105710>)
-![create a contact message](https://drive.google.com/uc?id=1NyFW_-IXUz55eSMVqvRFA1xUzGqECQgL)
+They enforce:
 
-![FETCH All Contact Messages (Auth: Admin)-GET /api/contact](<https://img.shields.io/badge/FETCH%20All%20Contact%20Messages%20(Auth%3A%20Admin)-GET%20%2Fapi%2Fcontact-green?style=flat-square&logoSize=auto&color=%23105710>)
-![fetch all contact messages](https://drive.google.com/uc?id=16zXb11JlztVOc5JxeEjMk-46O0vIM0iq)
+- data structure
+- validation rules
+- indexes
 
-![UPDATE a Contact Message as Read (Auth: Admin)-PUT /api/contact/{message__id}/read](<https://img.shields.io/badge/UPDATE%20a%20Contact%20Message%20as%20Read%20(Auth%3A%20Admin)-PUT%20%2Fapi%2Fcontact%2F%7Bmessage__id%7D%2Fread-green?style=flat-square&logoSize=auto&color=%23105710>)
-![update a contact message as read](https://drive.google.com/uc?id=1fk81v7tNl7yNYDiEop3EE36my6MSMVuH)
+Models are located in:
 
-### Subscription Endpoint
+```
+models/
+```
 
-![Subscribe (Public)-POST /api/subscription/subscribe](<https://img.shields.io/badge/Subscribe%20(Public)-POST%20%2Fapi%2Fsubscription%2Fsubscribe-green?style=flat-square&logoSize=auto&color=%23105710>)
-![subscribe](https://drive.google.com/uc?id=12bBGCuonRnWO5o3LdNrrG3s6dxg83HWn)
+Example models:
 
-![SEND a Newsletter (Auth: Admin)-POST /api/subscription/send--newsletter](<https://img.shields.io/badge/SEND%20a%20Newsletter%20(Auth%3A%20Admin)-POST%20%2Fapi%2Fsubscription%2Fsend--newsletter-green?style=flat-square&logoSize=auto&color=%23105710>)
-![send a newsletter](https://drive.google.com/uc?id=1cDYxFXl5e8fGFO8RgJEyz1eHCnqOfdk7)
+```
+User
+Room
+Booking
+Contact
+Subscription
+```
 
-![FETCH All Subscribers (Auth: Admin)-GET /api/subscription/](<https://img.shields.io/badge/FETCH%20All%20Subscribers%20(Auth%3A%20Admin)-GET%20%2Fapi%2Fsubscription%2F-green?style=flat-square&logoSize=auto&color=%23105710>)
-![fetch all subscribers](https://drive.google.com/uc?id=11G-g4dF6-2N9CljUUUlu3ik4_tqWmUJ-)
+---
 
-![Unsubscribe (Auth: Admin)-PATCH /api/subscription/unsubscribe](<https://img.shields.io/badge/Unsubscribe%20(Auth%3A%20Admin)-PATCH%20%2Fapi%2Fsubscription%2Funsubscribe-green?style=flat-square&logoSize=auto&color=%23105710>)
-![unsubscribe](https://drive.google.com/uc?id=1W-rcF6njGjawb_Zivc0YaZt1nG6gegIz)
+### Middleware
+
+Middleware handles **cross-cutting concerns** such as authentication, validation, and error handling.
+
+Examples:
+
+- JWT authentication
+- role-based access control
+- request validation
+- error handling
+
+Middleware is located in:
+
+```
+middleware/
+```
+
+---
+
+# Authentication System
+
+Authentication is implemented using **JWT (JSON Web Tokens)** with **Passport.js**.
+
+## Login Flow
+
+```
+User → Login Request
+      ↓
+Password validation
+      ↓
+JWT Token issued
+      ↓
+Token stored on client
+      ↓
+Protected requests include token
+```
+
+Example authorization header:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## JWT Payload Structure
+
+```
+{
+  id: "user_id",
+  email: "user@example.com",
+  role: "user"
+}
+```
+
+---
+
+# Role-Based Access Control
+
+The system uses **RBAC** to control access to resources.
+
+| Role   | Permissions                    |
+| ------ | ------------------------------ |
+| User   | Manage own bookings            |
+| Admin  | Manage rooms, bookings, users  |
+| Public | Contact and subscription forms |
+
+Middleware enforces role permissions.
+
+Example:
+
+```
+requireRole(["admin"])
+```
+
+---
+
+# Booking System Design
+
+The booking system enforces multiple business rules to maintain data integrity.
+
+## Booking Creation Rules
+
+A booking requires:
+
+- first name
+- last name
+- email
+- phone
+- room
+- check-in date
+- check-out date
+- number of guests
+
+Validation rules:
+
+- Check-in date must be today or later
+- Check-out must be after check-in
+- Guest count must meet room capacity
+
+---
+
+## Room Availability Validation
+
+When a booking is created, the system checks for **date overlaps**.
+
+Overlap detection logic:
+
+```
+existing.checkIn < newCheckOut
+AND
+existing.checkOut > newCheckIn
+```
+
+If an overlap exists, the booking request is rejected.
+
+---
+
+## Concurrency Protection
+
+To prevent race conditions during booking creation, the system uses **MongoDB transactions**.
+
+Transaction flow:
+
+```
+Start transaction
+↓
+Check room availability
+↓
+Create booking
+↓
+Commit transaction
+```
+
+This ensures atomic booking operations.
+
+---
+
+# Pricing System
+
+Pricing is calculated server-side.
+
+Pricing factors:
+
+- room base price
+- number of guests
+- board type
+- number of nights
+
+The booking stores a **pricing snapshot**:
+
+```
+roomPrice
+totalCost
+pricingBreakdown
+```
+
+This ensures historical bookings remain accurate even if room prices change.
+
+---
+
+# Database Design
+
+The system uses **MongoDB with Mongoose schemas**.
+
+Collections:
+
+```
+users
+rooms
+bookings
+contacts
+subscriptions
+```
+
+---
+
+## Relationships
+
+Although MongoDB is a document database, logical relationships are maintained using **ObjectId references**.
+
+```
+User (1) → (Many) Bookings
+Room (1) → (Many) Bookings
+```
+
+Example booking reference:
+
+```
+booking.user → ObjectId(User)
+booking.room → ObjectId(Room)
+```
+
+---
+
+## Indexing Strategy
+
+Indexes are used to optimize queries.
+
+Example indexes:
+
+```
+Booking: room + checkInDate + checkOutDate
+Booking: user
+Booking: createdAt
+```
+
+These indexes improve performance for:
+
+- availability checks
+- user booking history
+- admin reporting
+
+---
+
+# Security Architecture
+
+The system implements multiple security layers.
+
+## Security Middleware
+
+| Middleware     | Purpose                      |
+| -------------- | ---------------------------- |
+| Helmet         | Security headers             |
+| Mongo Sanitize | Prevent NoSQL injection      |
+| XSS Clean      | Prevent cross-site scripting |
+| DOMPurify      | Sanitize HTML input          |
+| Rate Limiter   | Prevent brute-force attacks  |
+
+---
+
+## Password Security
+
+Passwords are hashed using **bcrypt**.
+
+Hashing occurs during user registration.
+
+Passwords are **never returned in API responses**.
+
+---
+
+# Error Handling
+
+Centralized error handling is implemented through middleware.
+
+Error responses follow a consistent structure:
+
+```
+{
+  "message": "Error description"
+}
+```
+
+Production environments hide internal error details.
+
+---
+
+# Logging
+
+The application uses:
+
+- **Morgan** for HTTP request logging
+- **Winston** for application logging
+
+Logs are used for:
+
+- debugging
+- monitoring
+- auditing
+
+---
+
+# Development Tools
+
+| Tool              | Purpose                   |
+| ----------------- | ------------------------- |
+| Swagger           | API documentation         |
+| Postman           | API testing               |
+| Jest              | Automated testing         |
+| MongoMemoryServer | Isolated testing database |
+
+---
+
+# Known Limitations
+
+This project is an academic proof-of-concept.
+
+The system does not include:
+
+- payment processing
+- refund systems
+- distributed caching
+- microservices architecture
+
+These features would typically be implemented in production environments.
+
+---
+
+# Future Improvements
+
+Potential future enhancements include:
+
+- payment gateway integration
+- Redis caching
+- CI/CD pipelines
+- monitoring and observability tools
+- booking lifecycle automation
+
+# Evaluator Testing Guide
+
+To simplify testing and evaluation of the API, this repository includes **seed scripts** that populate the database with sample users, rooms, and bookings.
+
+These scripts allow evaluators to quickly authenticate and interact with the API without creating test data manually.
+
+---
+
+# Running the Application
+
+## 1. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+## 2. Configure Environment Variables
+
+Create a `.env` file in the root directory.
+
+Example configuration:
+
+```
+NODE_ENV=development
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secure_secret
+FRONTEND_URL=http://localhost:4123
+```
+
+If testing Google OAuth, also add:
+
+```
+GOOGLE_CLIENT_ID=provided_in_project_link
+GOOGLE_CLIENT_SECRET=provided_in_project_link
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+```
+
+Google OAuth credentials for testing are provided in the project documentation.
+
+---
+
+## 3. Start the Development Server
+
+```bash
+npm run dev
+```
+
+This runs the server using **nodemon** for automatic reloads during development.
+
+The API will be available at:
+
+```
+http://localhost:3000
+```
+
+---
+
+# Seeding Test Data
+
+The project provides seed scripts to populate the database.
+
+Run the following command:
+
+```bash
+npm run seed:all
+```
+
+This will create:
+
+- default users
+- sample rooms
+- sample bookings
+
+---
+
+## Reset and Reseed the Database
+
+To clear existing data and reseed everything:
+
+```bash
+npm run seed:clean
+```
+
+This will:
+
+1. Remove existing development data
+2. Recreate seed users
+3. Recreate sample rooms
+4. Recreate sample bookings
+
+Seeders are **restricted to development mode only** to prevent accidental production execution.
+
+---
+
+# Test User Credentials
+
+After running the seed scripts, the following users are available for authentication.
+
+## Regular Users
+
+| Email                 | Password | Role |
+| --------------------- | -------- | ---- |
+| user1.wta@maildrop.cc | 123456   | user |
+| user2.wta@maildrop.cc | 123456   | user |
+| user3.wta@maildrop.cc | 123456   | user |
+
+---
+
+## Administrator
+
+| Email                 | Password | Role  |
+| --------------------- | -------- | ----- |
+| admin.wta@maildrop.cc | admin123 | admin |
+
+---
+
+# Authentication Example
+
+Login endpoint:
+
+```
+POST /api/auth/login
+```
+
+Request body:
+
+```json
+{
+  "email": "user1.wta@maildrop.cc",
+  "password": "123456"
+}
+```
+
+Response:
+
+```json
+{
+  "token": "JWT_TOKEN",
+  "user": {
+    "id": "...",
+    "email": "user1.wta@maildrop.cc",
+    "role": "user"
+  }
+}
+```
+
+Use the returned token for authenticated requests:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+# Google OAuth Testing
+
+The API supports **Google OAuth authentication**.
+
+The OAuth test credentials are provided in the project documentation.
+
+OAuth login endpoint:
+
+```
+GET /api/auth/google
+```
+
+Successful authentication redirects to the configured frontend URL with a generated JWT token.
+
+---
+
+# API Documentation
+
+Interactive API documentation is available via **Swagger UI**.
+
+After starting the server, visit:
+
+```
+http://localhost:3000/api-docs
+```
+
+Swagger allows evaluators to:
+
+- explore endpoints
+- test requests directly
+- view request/response schemas
+
+---
+
+# Recommended Testing Flow
+
+1. Start the server
+
+```
+npm run dev
+```
+
+2. Seed the database
+
+```
+npm run seed:all
+```
+
+3. Login using a seeded user
+
+```
+POST /api/auth/login
+```
+
+4. Copy the JWT token
+
+5. Use the token to test protected endpoints such as:
+
+```
+GET /api/users/profile
+POST /api/bookings
+GET /api/bookings
+```
+
+---
+
+# Seeder Security Restriction
+
+Seed scripts are intentionally restricted to development mode:
+
+```js
+if (process.env.NODE_ENV !== "development") {
+  console.error("Seeder can only run in development!");
+  process.exit(1);
+}
+```
+
+This prevents accidental execution in production environments.
