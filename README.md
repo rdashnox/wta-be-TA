@@ -1,4 +1,4 @@
-# wta-be
+# WTA-BE
 
 This document provides detailed technical documentation for the **Skye Suites Hotel API backend**.
 
