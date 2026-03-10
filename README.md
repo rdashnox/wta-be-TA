@@ -2,7 +2,7 @@
 
 This document provides detailed technical documentation for the **Skye Suites Hotel API backend**.
 
-It explains the **system architecture, database design, authentication flow, and business rules** implemented in the backend system.
+It explains the **system architecture, database design, authentication flow, and business rules** implemented in the backend system. For the frontend part of the project, please check the [wta-fe repository](https://github.com/imperionite/wta-fe).
 
 # Table of Contents
 
