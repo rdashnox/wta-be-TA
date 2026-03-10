@@ -1,5 +1,7 @@
 # Entity-Relationship Diagram
 
+![ERD](https://drive.google.com/uc?id=1MptQkTnDAD-zUPf7Xc9cZywANzerM4Gk)
+
 The ERD visually represents the **collections and their relationships** in the system:
 
 - **Users**, **Rooms**, **Bookings**, **Contacts**, and **Subscriptions** are the main collections.
