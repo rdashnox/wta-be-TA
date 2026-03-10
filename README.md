@@ -41,7 +41,6 @@ It explains the **system architecture, database design, authentication flow, and
 - [Logging](#logging)
 - [Development Tools](#development-tools)
 - [Known Limitations](#known-limitations)
-- [Future Improvements](#future-improvements)
 
 - [Evaluator Testing Guide](#evaluator-testing-guide)
   - [Running the Application](#running-the-application)
@@ -455,7 +454,6 @@ Logs are used for:
 | ----------------- | ------------------------- |
 | Swagger           | API documentation         |
 | Postman           | API testing               |
-| Jest              | Automated testing         |
 | MongoMemoryServer | Isolated testing database |
 
 ---
@@ -474,16 +472,6 @@ The system does not include:
 These features would typically be implemented in production environments.
 
 ---
-
-# Future Improvements
-
-Potential future enhancements include:
-
-- payment gateway integration
-- Redis caching
-- CI/CD pipelines
-- monitoring and observability tools
-- booking lifecycle automation
 
 # Evaluator Testing Guide
 
