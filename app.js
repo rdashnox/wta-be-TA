@@ -14,13 +14,16 @@ const connectDB = require("./config/db");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const xss = require("xss-clean"); // Extra XSS protection
-const { JSDOM } = require("jsdom");
-const createDOMPurify = require("dompurify");
 const { swaggerSpec, swaggerUi } = require("./swagger/swagger");
 
 // Initialize DOMPurify
-const window = new JSDOM("").window;
-const DOMPurify = createDOMPurify(window);
+let DOMPurify;
+if (!config.isTest) {
+  const { JSDOM } = require("jsdom");
+  const createDOMPurify = require("dompurify");
+  const window = new JSDOM("").window;
+  DOMPurify = createDOMPurify(window);
+}
 
 // Routers
 const authRouter = require("./routes/auth");
@@ -107,7 +110,7 @@ app.use(
 
 // SANITIZE INPUT MIDDLEWARE
 app.use((req, res, next) => {
-  if (req.body && req.body.note) {
+  if (req.body?.note && DOMPurify) {
     req.body.note = DOMPurify.sanitize(req.body.note);
   }
   next();

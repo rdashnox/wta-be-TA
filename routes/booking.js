@@ -120,21 +120,20 @@ router.get("/", bookingController.getMyBookings);
 router
   .route("/:id")
   .put(
+    validateParamId("id"),
     async (req, res, next) => {
-      const Booking = require("../models/Booking");
       try {
+        const Booking = require("../models/Booking");
         const booking = await Booking.findById(req.params.id);
-        if (!booking)
+        if (!booking) {
           return res.status(404).json({ message: "Booking not found" });
-
-        // Attach existing checkInDate for Joi validation
+        }
         req.body._existingCheckInDate = booking.checkInDate;
         next();
       } catch (err) {
-        next(err);
+        return res.status(500).json({ message: "Server error" });
       }
     },
-    validateParamId("id"),
     validateBookingUpdate,
     requireOwnership("Booking"),
     bookingController.updateBooking,
