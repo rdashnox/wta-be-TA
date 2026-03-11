@@ -1,5 +1,4 @@
-const { createBooking, updateBooking } = require("../../services/bookingService");
-const Booking = require("../../models/Booking");
+const { createBooking } = require("../../services/bookingService");
 const Room = require("../../models/Room");
 const User = require("../../models/User");
 const { connectTestDB, clearDB, disconnectDB } = require("../testSetup");

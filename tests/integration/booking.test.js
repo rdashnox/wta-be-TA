@@ -1,6 +1,5 @@
 const request = require("supertest");
 const app = require("../../app");
-const mongoose = require("mongoose");
 const {
   connectTestDB,
   clearDB,
@@ -9,9 +8,9 @@ const {
   createTestRoom,
   createAdminUser,
 } = require("../testSetup");
-const User = require("../../models/User");
-const jwt = require("jsonwebtoken");
 const config = require("../../config/config");
+const jwt = require("jsonwebtoken");
+
 
 jest.setTimeout(20000);
 
