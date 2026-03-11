@@ -1,23 +1,21 @@
+/*
+ * for @k358k
+ */
+
 const { calculatePricing } = require("../../services/pricingService");
 
 describe("Pricing Service", () => {
-  it("should calculate correct pricing for given stay", () => {
+  it("should calculate correct pricing for given stay", async () => {
+    // HINT: 2 nights = May 1 to May 3
     const startDate = new Date("2026-05-01");
     const endDate = new Date("2026-05-03");
-    const pricing = calculatePricing(
-      1000,
-      startDate,
-      endDate,
-      2,
-      1,
-      "Breakfast",
-    );
 
+    // TODO: Call calculatePricing(roomPrice, startDate, endDate, adults, children, boardType)
+    const pricing = /* YOUR CODE HERE */;
+
+    // TODO: Check structure and totalCost > 0
     expect(pricing.nights).toBe(2);
-    expect(pricing.breakdown).toHaveProperty("baseRoom");
-    expect(pricing.breakdown).toHaveProperty("extraAdults");
-    expect(pricing.breakdown).toHaveProperty("children");
-    expect(pricing.breakdown).toHaveProperty("meals");
+    expect(pricing.breakfast).toHaveProperty("baseRoom");
     expect(pricing.totalCost).toBeGreaterThan(0);
   });
 
@@ -25,11 +23,10 @@ describe("Pricing Service", () => {
     const startDate = new Date("2026-06-01");
     const endDate = new Date("2026-06-04");
 
-    // If boardType is not listed, cost should default to 0
-    const pricing = calculatePricing(500, startDate, endDate, 1, 0, "None");
+    // TODO: 3 nights, 1 adult, 0 children, "None" board
+    const pricing = /* YOUR CODE HERE */;
 
     expect(pricing.nights).toBe(3);
-    expect(pricing.breakdown.meals).toBeNaN();
-    expect(pricing.totalCost).toBeNaN();
+    /* TODO: Check what happens with invalid boardType */
   });
 });

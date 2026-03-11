@@ -1,3 +1,7 @@
+/* 
+* for @rdashnox
+*/
+
 const {
   register,
   login,
@@ -10,60 +14,38 @@ const { connectTestDB, clearDB, disconnectDB } = require("../testSetup");
 jest.setTimeout(20000);
 
 describe("Auth Controller Unit Tests", () => {
-  beforeAll(async () => {
-    await connectTestDB();
-  });
-
-  afterEach(async () => {
-    await clearDB();
-  });
-
-  afterAll(async () => {
-    await disconnectDB();
-  });
+  beforeAll(async () => await connectTestDB());
+  afterEach(async () => await clearDB());
+  afterAll(async () => await disconnectDB());
 
   describe("register", () => {
     it("should register new user successfully", async () => {
-      const req = {
-        body: {
-          email: `test${Date.now()}@example.com`,
-          password: "password123",
-          firstName: "John",
-          lastName: "Doe",
-        },
-      };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      // TODO 1: Create req.body with valid user data (email, password, firstName, lastName)
+      const req = { /* YOUR CODE HERE */ };
+      
+      // TODO 2: Create mock res object with status() and json() methods
+      const res = { /* YOUR CODE HERE */ };
 
-      await register(req, res);
+      // TODO 3: Call the register function
+      /* YOUR CODE HERE */
 
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalled();
-      const result = res.json.mock.calls[0][0];
-      expect(result.user.email).toBe(req.body.email);
+      // TODO 4: Assert status 201 and user email matches
+      /* YOUR CODE HERE - expect(res.status).toHaveBeenCalledWith() */
+      /* YOUR CODE HERE - check result.user.email */
     });
 
     it("should reject duplicate email", async () => {
-      const testEmail = `dup${Date.now()}@example.com`;
-
-      const req1 = {
-        body: { email: testEmail, password: "pass123", firstName: "John" },
-      };
-      const res1 = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      await register(req1, res1);
-
-      const req2 = {
-        body: { email: testEmail, password: "pass123", firstName: "Jane" },
-      };
-      const res2 = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-      await register(req2, res2);
-
-      expect(res2.status).toHaveBeenCalledWith(400);
-      const error = res2.json.mock.calls[0][0];
-      expect(error.message).toMatch(/user|exists|email/i); 
+      // TODO 1: Create test email
+      const testEmail = /* YOUR CODE HERE */;
+      
+      // TODO 2: Register first user (successful)
+      /* YOUR CODE HERE - call register() */
+      
+      // TODO 3: Try registering same email again
+      /* YOUR CODE HERE */
+      
+      // TODO 4: Expect 400 status for duplicate
+      /* YOUR CODE HERE */
     });
   });
 
@@ -71,6 +53,7 @@ describe("Auth Controller Unit Tests", () => {
     let testUser;
 
     beforeEach(async () => {
+      // HINT: Creates test user in DB before each test
       testUser = await User.create({
         email: `login${Date.now()}@example.com`,
         password: "password123",
@@ -79,77 +62,32 @@ describe("Auth Controller Unit Tests", () => {
     });
 
     it("should login user with valid credentials", async () => {
-      const req = {
-        body: {
-          email: testUser.email,
-          password: "password123",
-        },
-      };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-
-      await login(req, res);
-
-      expect(res.json).toHaveBeenCalled();
-      const result = res.json.mock.calls[0][0];
-      expect(result.user).toBeDefined();
-      expect(result.user.email).toBe(testUser.email);
+      // TODO 1: Create req with testUser.email and correct password
+      const req = { /* YOUR CODE HERE */ };
+      
+      // TODO 2: Mock res object
+      const res = { /* YOUR CODE HERE */ };
+      
+      // TODO 3: Call login function
+      /* YOUR CODE HERE */
+      
+      // TODO 4: Check successful response
+      /* YOUR CODE HERE - expect(res.json).toHaveBeenCalled() */
     });
 
     it("should reject invalid credentials", async () => {
-      const req = {
-        body: {
-          email: testUser.email,
-          password: "wrongpassword",
-        },
-      };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-      await login(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(401);
+      // TODO: Use testUser.email but WRONG password
+      // TODO: Expect res.status(401)
+      /* YOUR CODE HERE */
     });
   });
 
-  describe("getProfile & updateProfile", () => {
-    let testUser;
-
-    beforeEach(async () => {
-      testUser = await User.create({
-        email: `profile${Date.now()}@example.com`,
-        password: "password123",
-        firstName: "OldName",
-      });
-    });
-
-    it("getProfile should return user profile", async () => {
-      const req = { user: { id: testUser._id.toString() } };
-      const res = { json: jest.fn() };
-
-      try {
-        await getProfile(req, res);
-        expect(res.json).toHaveBeenCalled();
-      } catch (error) {
-        // Profile endpoints might not exist - skip gracefully
-        console.log("getProfile not implemented - skipping");
-      }
-    });
-
-    it("updateProfile should update user profile", async () => {
-      const req = {
-        user: { id: testUser._id.toString() },
-        body: { firstName: "NewName", phone: "+639123456789" },
-      };
-      const res = { json: jest.fn() };
-
-      try {
-        await updateProfile(req, res);
-        expect(res.json).toHaveBeenCalled();
-      } catch (error) {
-        console.log("updateProfile not implemented - skipping");
-      }
+  describe("getProfile", () => {
+    it("should return user profile", async () => {
+      // TODO 1: Create test user
+      // TODO 2: req.user = { id: testUser._id }
+      // TODO 3: Call getProfile and check res.json()
+      /* YOUR CODE HERE */
     });
   });
 });

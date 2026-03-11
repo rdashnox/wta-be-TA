@@ -1,4 +1,6 @@
-const mongoose = require("mongoose");
+/* 
+* for @Gracielleee
+*/
 const {
   subscribe,
   unsubscribe,
@@ -11,118 +13,57 @@ const { connectTestDB, clearDB, disconnectDB } = require("../testSetup");
 jest.setTimeout(20000);
 
 describe("Subscription Controller Unit Tests", () => {
-  beforeAll(async () => {
-    await connectTestDB();
-  });
-
-  afterEach(async () => {
-    await clearDB();
-  });
-
-  afterAll(async () => {
-    await disconnectDB();
-  });
+  beforeAll(async () => await connectTestDB());
+  afterEach(async () => await clearDB());
+  afterAll(async () => await disconnectDB());
 
   describe("subscribe", () => {
     it("should subscribe new email successfully", async () => {
-      const req = {
-        body: { email: "new@example.com" },
-      };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      const req = { body: { email: "new@example.com" } };
+      const res = { /* TODO: Mock res.status().json() */ };
 
-      await subscribe(req, res);
+      // TODO: Call subscribe
+      await /* YOUR CODE HERE */;
 
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalled();
-      const createdSub = res.json.mock.calls[0][0];
-      expect(createdSub.email).toBe("new@example.com");
-      expect(createdSub.status).toBe("active");
+      // TODO: Check status 201, email matches, status="active"
+      /* YOUR CODE HERE */
     });
 
     it("should reject already subscribed email", async () => {
-      const req = { body: { email: "existing@example.com" } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-
-      // Create existing subscription first
-      await Subscription.create({ email: "existing@example.com" });
-
-      await subscribe(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Email is already subscribed",
-      });
+      // HINT: Create existing subscription first with Subscription.create()
+      /* TODO: await Subscription.create() */
+      /* TODO: expect status 400, message: "Email is already subscribed" */
     });
   });
 
   describe("unsubscribe", () => {
     it("should unsubscribe existing email", async () => {
-      // Create subscription first
-      const testSub = await Subscription.create({ email: "user@example.com" });
-
-      const req = { body: { email: "user@example.com" } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-      await unsubscribe(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(200);
-      const result = res.json.mock.calls[0][0];
-      expect(result.status).toBe("unsubscribed");
+      // TODO 1: Create test subscription first
+      // TODO 2: Call unsubscribe with that email
+      // TODO 3: Check result.status === "unsubscribed"
+      /* YOUR CODE HERE */
     });
 
     it("should return 404 for non-existent subscription", async () => {
-      const req = { body: { email: "nonexistent@example.com" } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-      await unsubscribe(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Subscription not found",
-      });
+      // TODO: Try unsubscribe non-existent email → expect 404
+      /* YOUR CODE HERE */
     });
   });
 
   describe("getAllSubscriptions", () => {
     it("should return all subscriptions", async () => {
-      await Subscription.create([
-        { email: "test1@example.com" },
-        { email: "test2@example.com" },
-      ]);
-
-      const req = {};
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-      await getAllSubscriptions(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(200);
-      const result = res.json.mock.calls[0][0];
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(2);
+      // TODO 1: Create 2 test subscriptions
+      // TODO 2: Call getAllSubscriptions
+      // TODO 3: Check array length === 2
+      /* YOUR CODE HERE */
     });
   });
 
   describe("sendNewsletter", () => {
     it("should return active subscribers count", async () => {
-      await Subscription.create([
-        { email: "active1@example.com", status: "active" },
-        { email: "inactive@example.com", status: "unsubscribed" },
-      ]);
-
-      const req = {};
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-      await sendNewsletter(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(200);
-      const result = res.json.mock.calls[0][0];
-      expect(result.recipientCount).toBe(1);
+      // HINT: Create 1 active + 1 unsubscribed subscription
+      // TODO: Check recipientCount === 1 (only active ones)
+      /* YOUR CODE HERE */
     });
   });
 });
