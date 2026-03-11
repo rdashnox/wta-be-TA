@@ -136,7 +136,6 @@ describe("Booking API Integration Tests", () => {
         .send(overCapacityData)
         .expect(400);
 
-      // FIXED: Service error returns string, not array
       expect(typeof res.body.message).toBe("string");
       expect(res.body.message).toContain("exceeds room capacity");
     });

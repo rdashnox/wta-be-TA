@@ -22,7 +22,7 @@
     "test:subscription": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/subscriptionController.test.js",
     "test:auth": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/authController.test.js",
     "test:auth:int": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/integration/auth.test.js",
-    "test:google": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/integration/googleAuth.test.js",
+    "test:room": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/roomController.test.js",
     "test:unit:watch": "NODE_ENV=test jest tests/unit --watch",
     "test:integration:watch": "NODE_ENV=test jest tests/integration --watch"
   },

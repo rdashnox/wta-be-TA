@@ -4,7 +4,6 @@ const Room = require("../../models/Room");
 const User = require("../../models/User");
 const { connectTestDB, clearDB, disconnectDB } = require("../testSetup");
 
-// Increase default Jest timeout for slow in-memory DB startup
 jest.setTimeout(20000);
 
 describe("Booking Service", () => {

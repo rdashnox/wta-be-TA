@@ -63,7 +63,7 @@ describe("Auth Controller Unit Tests", () => {
 
       expect(res2.status).toHaveBeenCalledWith(400);
       const error = res2.json.mock.calls[0][0];
-      expect(error.message).toMatch(/user|exists|email/i); // Flexible match
+      expect(error.message).toMatch(/user|exists|email/i); 
     });
   });
 

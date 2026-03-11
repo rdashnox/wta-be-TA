@@ -82,7 +82,6 @@ describe("Auth API Integration Tests", () => {
         })
         .expect(200);
 
-      // ✅ FIXED: Check response structure
       expect(res.body.user).toBeDefined();
       expect(res.body.user.email).toBe(testUser.email);
       if (res.body.token) {
