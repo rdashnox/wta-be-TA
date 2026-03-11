@@ -10,7 +10,21 @@
     "seed:clean": "cross-env NODE_ENV=development node seeder/deleteResources.js && npm run seed:all",
     "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
     "start": "NODE_ENV=production node ./bin/www",
-    "test": "NODE_ENV=test jest --detectOpenHandles"
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles",
+    "test:watch": "NODE_ENV=test jest --watch",
+    "test:coverage": "NODE_ENV=test jest --coverage",
+    "test:unit": "NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit",
+    "test:integration": "NODE_ENV=test --runInBand --detectOpenHandles jest tests/integration",
+    "test:booking": "NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/bookingService.test.js",
+    "test:pricing": "NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/pricingService.test.js",
+    "test:booking:int": "NODE_ENV=test jest --runInBand --detectOpenHandles tests/integration/booking.test.js",
+    "test:contact": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/contactController.test.js",
+    "test:subscription": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/subscriptionController.test.js",
+    "test:auth": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/authController.test.js",
+    "test:auth:int": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/integration/auth.test.js",
+    "test:room": "NODE_ENV=test jest -runInBand --detectOpenHandles tests/unit/roomController.test.js",
+    "test:unit:watch": "NODE_ENV=test jest tests/unit --watch",
+    "test:integration:watch": "NODE_ENV=test jest tests/integration --watch"
   },
   "engines": {
     "node": ">=18"
@@ -44,8 +58,29 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^6.0.2",
+    "@types/supertest": "^7.2.0",
     "cross-env": "^10.1.0",
+    "jest": "^30.3.0",
     "mongodb-memory-server": "^11.0.1",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/testSetup.js"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "collectCoverageFrom": [
+      "controllers/**/*.js",
+      "services/**/*.js",
+      "routes/**/*.js"
+    ],
+    "forceExit": true,
+    "testTimeout": 30000
   }
 }

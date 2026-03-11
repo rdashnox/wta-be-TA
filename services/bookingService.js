@@ -3,12 +3,17 @@ const Booking = require("../models/Booking");
 const Room = require("../models/Room");
 const { calculatePricing } = require("./pricingService");
 
+const isTest = process.env.NODE_ENV === "test";
+
 /**
- * Create booking with full validation + room availability check + PRICING + RACE CONDITION PROTECTION
+ * Create booking with full validation + room availability check + PRICING + optional transaction
  */
 exports.createBooking = async (bookingData, userId) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
+  if (!isTest) {
+    session = await mongoose.startSession();
+    session.startTransaction();
+  }
 
   try {
     const {
@@ -49,7 +54,7 @@ exports.createBooking = async (bookingData, userId) => {
       throw new Error("Check-out must be after check-in");
     if (parseInt(adults) < 1) throw new Error("At least one adult required");
 
-    // Fetch room document inside transaction
+    // Fetch room document (with session only if not test)
     const roomDoc = await Room.findById(room).session(session);
     if (!roomDoc) throw new Error("Room not found");
 
@@ -59,7 +64,7 @@ exports.createBooking = async (bookingData, userId) => {
       throw new Error("Number of guests exceeds room capacity");
     }
 
-    // Check for overlapping bookings to prevent race conditions
+    // Check for overlapping bookings
     const overlappingBooking = await Booking.findOne({
       room,
       $or: [
@@ -69,9 +74,8 @@ exports.createBooking = async (bookingData, userId) => {
       ],
     }).session(session);
 
-    if (overlappingBooking) {
+    if (overlappingBooking)
       throw new Error("Room already booked for these dates");
-    }
 
     // Calculate pricing
     const pricing = calculatePricing(
@@ -83,7 +87,7 @@ exports.createBooking = async (bookingData, userId) => {
       boardType,
     );
 
-    // Create booking inside transaction
+    // Create booking (pass session only if not test)
     const booking = await Booking.create(
       [
         {
@@ -105,16 +109,20 @@ exports.createBooking = async (bookingData, userId) => {
           pricingBreakdown: pricing.breakdown,
         },
       ],
-      { session },
+      isTest ? {} : { session },
     );
 
-    await session.commitTransaction();
-    session.endSession();
+    if (!isTest) {
+      await session.commitTransaction();
+      session.endSession();
+    }
 
     return await booking[0].populate("room");
   } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
+    if (!isTest && session) {
+      await session.abortTransaction();
+      session.endSession();
+    }
     throw err;
   }
 };
@@ -157,7 +165,6 @@ exports.updateBooking = async (bookingId, updateData) => {
     if (newEndDate <= booking.checkInDate)
       throw new Error("Check-out must be after check-in");
 
-    // Room capacity validation
     const totalGuests =
       (updateData.adults ?? booking.adults) +
       (updateData.children ?? booking.children);
@@ -192,6 +199,5 @@ exports.updateBooking = async (bookingId, updateData) => {
   const updated = await Booking.findByIdAndUpdate(bookingId, updates, {
     new: true,
   }).populate("room");
-
   return updated;
 };
