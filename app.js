@@ -36,7 +36,9 @@ const bookingRouter = require("./routes/booking");
 const app = express();
 
 // Connect to database
-connectDB();
+if (!config.isTest) {
+  connectDB();
+}
 
 // Set security headers
 helmet.contentSecurityPolicy({

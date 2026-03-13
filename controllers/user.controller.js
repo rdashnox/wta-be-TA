@@ -7,9 +7,9 @@ exports.getProfile = async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const bookingCount = await Booking.countDocuments({ user: req.user._id });
-  res.json({
-    id: req.user._id,
+  const bookingCount = await Booking.countDocuments({ user: req.user.id });
+  res.status(200).json({
+    id: req.user.id,
     email: req.user.email,
     role: req.user.role,
     bookingCount,
