@@ -86,7 +86,7 @@ exports.login = async (req, res) => {
       { expiresIn: "1h" },
     );
 
-    res.json({
+    res.status(200).json({
       access,
       user: { id: user._id.toString(), email: user.email, role: user.role },
     });
