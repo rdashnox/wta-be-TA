@@ -6,6 +6,9 @@ It explains the **system architecture, database design, authentication flow, and
 
 # Table of Contents
 
+- [API Documentation](#api-documentation)
+  - [Manual API Testing](https://github.com/imperionite/wta-be/blob/main/MANUAL_API_TESTING.md)
+
 - [Database Design](#database-design)
 
 - [System Architecture](#system-architecture)
@@ -48,9 +51,26 @@ It explains the **system architecture, database design, authentication flow, and
   - [Test User Credentials](#test-user-credentials)
   - [Authentication Example](#authentication-example)
   - [Google OAuth Testing](#google-oauth-testing)
-  - [API Documentation](#api-documentation)
   - [Recommended Testing Flow](#recommended-testing-flow)
   - [Seeder Security Restriction](#seeder-security-restriction)
+
+---
+
+# API Documentation
+
+Interactive API documentation is available via **Swagger UI**.
+
+After starting the server, visit:
+
+```
+http://localhost:3000/api-docs
+```
+
+Swagger allows evaluators to:
+
+- explore endpoints
+- test requests directly
+- view request/response schemas
 
 ---
 
@@ -643,24 +663,6 @@ GET /api/auth/google
 ```
 
 Successful authentication redirects to the configured frontend URL with a generated JWT token.
-
----
-
-# API Documentation
-
-Interactive API documentation is available via **Swagger UI**.
-
-After starting the server, visit:
-
-```
-http://localhost:3000/api-docs
-```
-
-Swagger allows evaluators to:
-
-- explore endpoints
-- test requests directly
-- view request/response schemas
 
 ---
 
