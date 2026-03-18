@@ -32,6 +32,9 @@ const roomRouter = require("./routes/room");
 const contactRouter = require("./routes/contact");
 const subscriptionRouter = require("./routes/subscription");
 const bookingRouter = require("./routes/booking");
+const uploadRouter = require("./routes/upload");
+
+
 
 const app = express();
 
@@ -125,6 +128,7 @@ app.use("/api/rooms", roomRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/subscription", subscriptionRouter);
 app.use("/api/booking", bookingRouter);
+app.use("/api/upload", uploadRouter);
 
 // 404 HANDLER
 app.use((req, res, next) => {
