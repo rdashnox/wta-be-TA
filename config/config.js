@@ -9,6 +9,7 @@ const config = {
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   apiUrl: process.env.API_URL || "http://localhost:3000/api",
   isTest: process.env.NODE_ENV === "test",
+  isDev: process.env.NODE_ENV === "development",
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
 };

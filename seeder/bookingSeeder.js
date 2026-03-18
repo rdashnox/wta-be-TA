@@ -5,81 +5,62 @@ const Room = require("../models/Room");
 const { calculatePricing } = require("../services/pricingService");
 const connectDB = require("../config/db");
 const logger = require("../utils/logger");
+const config = require("../config/config");
+const { BOOKINGS } = require("./sharedData");
 
-if (process.env.NODE_ENV !== "development") {
-  logger.error("Seeder only in development!");
-  process.exit(1);
-}
-
-const userBookings = [
-  {
-    email: "user1.wta@maildrop.cc",
-    firstName: "John",
-    lastName: "Smith",
-    phone: "+639171234567",
-    checkInDate: "2026-04-15",
-    checkOutDate: "2026-04-18",
-    adults: 1,
-    children: 0,
-    boardType: "Breakfast",
-    note: "Business conference attendee",
-  },
-  {
-    email: "user2.wta@maildrop.cc",
-    firstName: "Anna",
-    lastName: "Perez",
-    phone: "+639282345678",
-    checkInDate: "2026-03-09",
-    checkOutDate: "2026-03-16",
-    adults: 2,
-    children: 4,
-    boardType: "Half-board",
-    note: "Family vacation with kids",
-  },
-  {
-    email: "user3.wta@maildrop.cc",
-    firstName: "Juan",
-    lastName: "Dela Cruz",
-    phone: "+639393456789",
-    checkInDate: "2026-03-22",
-    checkOutDate: "2026-03-29",
-    adults: 2,
-    children: 0,
-    boardType: "Half-board",
-    note: "Romantic honeymoon getaway",
-  },
-];
 
 const seedBookings = async () => {
   try {
     await connectDB();
+    logger.info("Booking Seeder Starting...");
 
-    // DEPENDENCY CHECKS
+    if (
+      process.env.NODE_ENV === "production" &&
+      (await Booking.countDocuments()) > 0
+    ) {
+      logger.info("Production: Bookings exist, skipping seed");
+      process.exit(0);
+    }
+
+    // DEV: Always wipe bookings (but check dependencies)
+    if (config?.isDev) {
+      await Booking.deleteMany({});
+      logger.info("🧹 Dev: Cleared existing bookings");
+    }
+
+    // DEPENDENCY CHECKS (Enhanced for Prod)
     const users = await User.find({
-      email: { $in: userBookings.map((b) => b.email) },
+      email: { $in: BOOKINGS.map((b) => b.email) },
     });
     const rooms = await Room.find();
 
-    if (users.length !== 3) {
+    if (users.length < BOOKINGS.length) {
       logger.error(
-        `Need 3 users! Found ${users.length}. Run: npm run seed:users`,
+        `❌ Need ${BOOKINGS.length} users! Found ${users.length}.`,
+        "Run: npm run seed:users first",
       );
       process.exit(1);
     }
 
     if (rooms.length === 0) {
-      logger.error("No rooms! Run: npm run seed:rooms");
+      logger.error("❌ No rooms! Run: npm run seed:rooms first");
       process.exit(1);
     }
 
     logger.info(`Found ${users.length} users, ${rooms.length} rooms`);
 
-    // CREATE BOOKINGS WITH PRICING SERVICE
     let createdCount = 0;
-    for (let i = 0; i < userBookings.length; i++) {
-      const bookingData = userBookings[i];
+    for (let i = 0; i < BOOKINGS.length; i++) {
+      const bookingData = BOOKINGS[i];
       const user = users.find((u) => u.email === bookingData.email);
       const room = rooms[i % rooms.length];
+
+      if (!user) {
+        logger.warn(
+          `⚠️  Skipping booking for ${bookingData.email} (user not found)`,
+        );
+        continue;
+      }
 
       // CALCULATE REAL PRICING
       const pricing = calculatePricing(
@@ -99,7 +80,7 @@ const seedBookings = async () => {
         checkInDate: new Date(bookingData.checkInDate),
         checkOutDate: new Date(bookingData.checkOutDate),
         adults: bookingData.adults,
-        children: bookingData.children,
+        children: bookingData.children || 0, 
         boardType: bookingData.boardType,
         note: bookingData.note,
         room: room._id,
@@ -113,7 +94,8 @@ const seedBookings = async () => {
       await Booking.create(booking);
 
       logger.info(
-        `${bookingData.firstName} ${bookingData.lastName} → ${room.type} from ${bookingData.checkInDate} to ${bookingData.checkOutDate}`,
+        `${bookingData.firstName} ${bookingData.lastName} → ${room.type} (${config?.env})`,
+        `from ${bookingData.checkInDate} to ${bookingData.checkOutDate}`,
       );
       logger.info(
         `   ${pricing.nights} nights | ₱${pricing.totalCost.toLocaleString()} TOTAL`,
@@ -121,7 +103,9 @@ const seedBookings = async () => {
       createdCount++;
     }
 
-    logger.info(`${createdCount} bookings seeded!`);
+    logger.info(
+      `${createdCount} bookings seeded! (${config?.env})`,
+    );
     process.exit(0);
   } catch (error) {
     logger.error("❌ Booking seeding failed:", error.message);
