@@ -20,4 +20,5 @@ if (!config.mongoUri || !config.jwtSecret) {
 }
 
 logger.info(`Environment variables loaded (${config.env})`);
+
 module.exports = config;
