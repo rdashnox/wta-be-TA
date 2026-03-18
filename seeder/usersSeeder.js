@@ -2,53 +2,45 @@ require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const connectDB = require("../config/db");
-
-// Only run in dev
-if (process.env.NODE_ENV !== "development") {
-  console.error("Seeder can only run in development!");
-  process.exit(1);
-}
+const { USERS } = require("./sharedData");
+const logger = require("../utils/logger");
+const config = require("../config/config");
 
 const seedUsers = async () => {
   try {
     await connectDB();
 
-    await User.deleteMany();
-    console.log("Existing users deleted");
+    // PROD SAFETY: Skip if ANY users exist
+    if (
+      process.env.NODE_ENV === "production" &&
+      (await User.countDocuments()) > 0
+    ) {
+      console.log("Production: Users exist, skipping seed");
+      process.exit(0);
+    }
 
-    const hashPassword = async (password) => {
-      const salt = await bcrypt.genSalt(10);
-      return bcrypt.hash(password, salt);
-    };
+    // DEV: Always wipe + reseed
+    if (config?.isDev) {
+      await User.deleteMany();
+      logger.info("🧹 Dev: Cleared users");
+    }
 
-    const users = [
-      {
-        email: "user1.wta@maildrop.cc",
-        password: await hashPassword("123456"),
-        role: "user",
-      },
-      {
-        email: "user2.wta@maildrop.cc",
-        password: await hashPassword("123456"),
-        role: "user",
-      },
-      {
-        email: "user3.wta@maildrop.cc",
-        password: await hashPassword("123456"),
-        role: "user",
-      },
-      {
-        email: "admin.wta@maildrop.cc",
-        password: await hashPassword("admin123"),
-        role: "admin",
-      },
-    ];
+    const hashPassword = async (password) => await bcrypt.hash(password, 10);
 
-    await User.insertMany(users);
-    console.log("Users seeded successfully");
-    process.exit();
+    const usersWithHash = await Promise.all(
+      USERS.map(async (user) => ({
+        ...user,
+        password: await hashPassword(user.password),
+      })),
+    );
+
+    await User.insertMany(usersWithHash);
+    logger.info(
+      `${usersWithHash.length} users seeded (${config?.env})`,
+    );
+    process.exit(0);
   } catch (err) {
-    console.error("Seeding error:", err);
+    logger.error("❌ Seeding failed:", err);
     process.exit(1);
   }
 };

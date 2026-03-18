@@ -7,7 +7,8 @@
     "seed:rooms": "cross-env NODE_ENV=development node seeder/roomSeeder.js",
     "seed:bookings": "cross-env NODE_ENV=development node seeder/bookingSeeder.js",
     "seed:all": "npm run seed:users && npm run seed:rooms && npm run seed:bookings",
-    "seed:clean": "cross-env NODE_ENV=development node seeder/deleteResources.js && npm run seed:all",
+    "seed:dev": "npm run seed:users && npm run seed:rooms && npm run seed:bookings",
+    "seed:clean": "cross-env NODE_ENV=development node seeder/deleteResources.js && npm run seed:dev",
     "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
     "start": "NODE_ENV=production node ./bin/www",
     "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
@@ -24,7 +25,9 @@
     "test:auth:int": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/integration/auth.test.js",
     "test:room": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/roomController.test.js",
     "test:unit:watch": "cross-env NODE_ENV=test jest tests/unit --watch",
-    "test:integration:watch": "cross-env NODE_ENV=test jest tests/integration --watch"
+    "test:integration:watch": "cross-env NODE_ENV=test jest tests/integration --watch",
+    "seed:prod": "npm run seed:users && npm run seed:rooms && npm run seed:bookings",
+    "deploy:seed": "npm run seed:prod"
   },
   "engines": {
     "node": ">=18"
