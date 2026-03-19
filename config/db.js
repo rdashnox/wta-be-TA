@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("./config");
 const logger = require("../utils/logger");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 
 let mongoServer;
 
@@ -10,6 +9,7 @@ const connectDB = async () => {
     let mongoUri = config.mongoUri;
 
     if (config.isTest) {
+      const { MongoMemoryServer } = require("mongodb-memory-server");
       if (!mongoServer) {
         mongoServer = await MongoMemoryServer.create();
       }
@@ -26,7 +26,7 @@ const connectDB = async () => {
     logger.error("MongoDB connection failed:", error);
 
     // ❗ Do not retry in test mode (causes open handles in Jest)
-    if (!config.isTest) {
+    if (!config.isTest && config.isDev) {
       setTimeout(connectDB, 5000);
     }
   }
