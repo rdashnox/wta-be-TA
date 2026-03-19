@@ -96,3 +96,11 @@
  DELETE /api/rooms/:id — AdminDelete a room.
 
 ```
+
+## UPLOAD
+
+![Upload Image](https://img.shields.io/badge/Upload%20Image-POST%20%2Fapi%2Fupload%2Fimage-2ea44f?style=flat-square)
+![Upload Image](https://drive.google.com/uc?id=1MKA798aFzIw6txhVJ7j_DN1_R67zrlaD)
+
+![Cloudinary Storage](https://img.shields.io/badge/Image%20Storage-Cloudinary-blue?style=flat-square)
+![Upload Image](https://drive.google.com/uc?id=1MKA798aFzIw6txhVJ7j_DN1_R67zrlaD)
