@@ -1,32 +1,22 @@
 #!/bin/bash
-set -e  # Exit on any error
+set -e 
 
 echo "NODE_ENV: $NODE_ENV"
 
-# Skip if users exist (prod-safe)
+# Skip if users exist OR if not production
 if [ "$NODE_ENV" = "production" ]; then
   node -e "
-    const mongoose = require('mongoose');
     require('dotenv').config();
+    const mongoose = require('mongoose');
     mongoose.connect(process.env.MONGO_URI).then(async () => {
       const User = require('./models/User');
       const count = await User.countDocuments();
-      process.exit(count > 0 ? 0 : 1);
+      process.exit(count > 0 ? 0 : 1);  // 0=skip, 1=seed
     });
   " && echo "Production data exists. Skipping seed." && exit 0;
 fi
 
-echo "🌱 Initial seeding with sharedData (users → rooms → bookings)..."
-
-# Sequential seeding
-npm run seed:users
-echo "Users seeded"
-
-npm run seed:rooms  
-echo "Rooms seeded"
-
-npm run seed:bookings
-echo "Bookings seeded"
-
+echo "🌱 Seeding production data..."
+npm run deploy:seed
+echo "✅ Production seed complete!"
 echo "👤 Admin: admin.wta@maildrop.cc / admin123"
-echo "📚 Swagger docs: http://localhost:${PORT}/api/docs"
