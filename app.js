@@ -34,8 +34,6 @@ const subscriptionRouter = require("./routes/subscription");
 const bookingRouter = require("./routes/booking");
 const uploadRouter = require("./routes/upload");
 
-
-
 const app = express();
 
 // Connect to database
@@ -130,6 +128,11 @@ app.use("/api/subscription", subscriptionRouter);
 app.use("/api/booking", bookingRouter);
 app.use("/api/upload", uploadRouter);
 
+app.use((req, res, next) => {
+  logger.error(`404 Attempted path: ${req.method} ${req.originalUrl}`);
+  next(createError(404));
+});
+
 // 404 HANDLER
 app.use((req, res, next) => {
   next(createError(404));
@@ -145,4 +148,3 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
-
