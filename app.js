@@ -10,6 +10,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const logger = require("./utils/logger");
+const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
@@ -35,6 +36,48 @@ const bookingRouter = require("./routes/booking");
 const uploadRouter = require("./routes/upload");
 
 const app = express();
+
+// health check endpoint
+app.get("/health", async (req, res) => {
+  let dbStatus = "down";
+  let dbResponseTime = null;
+
+  try {
+    if (mongoose.connection.readyState === 1) {
+      const dbStart = Date.now();
+
+      await Promise.race([
+        mongoose.connection.db.admin().ping(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("timeout")), 2000),
+        ),
+      ]);
+
+      dbStatus = "up";
+      dbResponseTime = Date.now() - dbStart;
+    } else {
+      dbStatus = "connecting"; // or "down"
+    }
+  } catch {
+    dbStatus = "down";
+  }
+
+  const overallStatus = dbStatus === "up" ? "ok" : "degraded";
+
+  res.status(200).json({
+    project: "wta-be",
+    status: overallStatus,
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    services: {
+      server: { status: "up" },
+      database: {
+        status: dbStatus,
+        responseTimeMs: dbResponseTime,
+      },
+    },
+  });
+});
 
 // Connect to database
 if (!config.isTest) {
@@ -128,13 +171,9 @@ app.use("/api/subscription", subscriptionRouter);
 app.use("/api/booking", bookingRouter);
 app.use("/api/upload", uploadRouter);
 
-app.use((req, res, next) => {
-  logger.error(`404 Attempted path: ${req.method} ${req.originalUrl}`);
-  next(createError(404));
-});
-
 // 404 HANDLER
 app.use((req, res, next) => {
+  logger.error(`404 Attempted path: ${req.method} ${req.originalUrl}`);
   next(createError(404));
 });
 
