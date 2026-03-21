@@ -62,8 +62,10 @@ Interactive API documentation is available via **Swagger UI**.
 
 After starting the server, visit:
 
-```
-http://localhost:3000/api-docs
+```sh
+# http://localhost:3000/api-docs (for dev)
+https://wta-be.onrender.com/api-docs
+
 ```
 
 Swagger allows evaluators to:
