@@ -33,6 +33,20 @@
 
 ---
 
+![Subscribe an email to the newsletter (Public) - POST /api/subscription/subscribe](https://img.shields.io/badge/Subscribe%20an%20email%20to%20the%20newsletter%20(Public)-POST%20%2Fapi%2Fsubscription%2Fsubscribe-green?style=flat-square&logoSize=auto&color=%23105710)
+![subscribe an email to the newsletter](https://drive.google.com/uc?id=13nvzFK-xDg-AGfdXTE6wkVKy3W_Oi_Uo)
+
+![Unsubscribe an email from the newsletter (Public) - PATCH /api/subscription/unsubscribe](https://img.shields.io/badge/Unsubscribe%20an%20email%20from%20the%20newsletter%20(Public)-PATCH%20%2Fapi%2Fsubscription%2Funsubscribe-green?style=flat-square&logoSize=auto&color=%23105710)
+![unsubscribe an email from the newsletter](https://drive.google.com/uc?id=1xEhVx2DHh4oA9uyx78Td6tPaDHYDrW22)
+
+![Retrieve all newsletter subscriptions (Admin) - GET /api/subscription](https://img.shields.io/badge/Retrieve%20all%20newsletter%20subscriptions%20(Admin)-GET%20%2Fapi%2Fsubscription-green?style=flat-square&logoSize=auto&color=%23105710)
+![retrieve all newsletter subscriptions](https://drive.google.com/uc?id=1IEJ16vWKSM_3u31Eqz8bKB7Kd_eATNwy)
+
+![Send a newsletter message to all subscribers (Admin) - POST /api/subscription/send-newsletter](https://img.shields.io/badge/Send%20a%20newsletter%20message%20to%20all%20subscribers%20(Admin)-POST%20%2Fapi%2Fsubscription%2Fsend--newsletter-green?style=flat-square&logoSize=auto&color=%23105710)
+![send a newsletter message to all subscribers](https://drive.google.com/uc?id=1nnUUi9AvEJJiqU5nbLa-qijF2pfToDi6)
+
+---
+
 ## CONTACT
 
 ```sh
@@ -45,6 +59,14 @@
  PUT /api/contact/:id/read — AdminMark a contact message as read.
 
 ```
+![Submit a contact message through the contact form (Public) - POST /api/contact](https://img.shields.io/badge/Submit%20a%20contact%20message%20through%20the%20contact%20form%20(Public)-POST%20%2Fapi%2Fcontact-green?style=flat-square&logoSize=auto&color=%23105710)
+![submit a contact message through the contact form](https://drive.google.com/uc?id=1QZHZxmxnz5lmEfSVmHWaKY2oOSFFHzVl)
+
+![Retrieve all contact messages (Admin) - GET /api/contact](https://img.shields.io/badge/Retrieve%20all%20contact%20messages%20(Admin)-GET%20%2Fapi%2Fcontact-green?style=flat-square&logoSize=auto&color=%23105710)
+![Retrieve all contact messages](https://drive.google.com/uc?id=1v1Hgyp98zhJT6iZK7WOclWnAUH6YCw4d)
+
+![Mark a contact message as read (Admin) - PUT /api/contact/:id/read](https://img.shields.io/badge/Mark%20a%20contact%20message%20as%20read%20(Admin)-PUT%20%2Fapi%2Fcontact%2F:id%2Fread-green?style=flat-square&logoSize=auto&color=%23105710)
+![mark a contact message as read](https://drive.google.com/uc?id=1tq2BI3plwowb_KWK_6lbWTOWuG29k4QD)
 
 ---
 
