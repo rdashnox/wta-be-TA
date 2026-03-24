@@ -109,7 +109,6 @@
 
 ![Delete a room (Admin) - DELETE /api/rooms/:id](https://img.shields.io/badge/Delete%20a%20room%20(Admin)-DELETE%20%2Fapi%2Frooms%2F:id-green?style=flat-square&logoSize=auto&color=%23105710)
 ![Delete Room](https://drive.google.com/uc?id=1NRdrm9yQ3daz_BMTVgrp3pLipFHUSoje)
-
 ---
 
 ---
