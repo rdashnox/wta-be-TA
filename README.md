@@ -4,8 +4,6 @@ This document provides detailed technical documentation for the **Skye Suites Ho
 
 It explains the **system architecture, database design, authentication flow, and business rules** implemented in the backend system. For the frontend part of the project, please check the [wta-fe repository](https://github.com/imperionite/wta-fe).
 
-[![Coverage Status](https://coveralls.io/repos/github/imperionite/wta-be/badge.svg)](https://coveralls.io/github/imperionite/wta-be)
-
 # Table of Contents
 
 - [API Documentation](#api-documentation)
@@ -48,6 +46,7 @@ It explains the **system architecture, database design, authentication flow, and
 - [Known Limitations](#known-limitations)
 
 - [Evaluator Testing Guide](#evaluator-testing-guide)
+  - [Test Coverage](#test-coverage)
   - [Running the Application](#running-the-application)
   - [Seeding Test Data](#seeding-test-data)
   - [Test User Credentials](#test-user-credentials)
@@ -504,6 +503,19 @@ These features would typically be implemented in production environments.
 To simplify testing and evaluation of the API, this repository includes **seed scripts** that populate the database with sample users, rooms, and bookings.
 
 These scripts allow evaluators to quickly authenticate and interact with the API without creating test data manually.
+
+---
+
+## Test Coverage
+
+![Statements Coverage](https://img.shields.io/badge/statements-75%25-yellow)
+![Branches Coverage](https://img.shields.io/badge/branches-61%25-orange)
+![Functions Coverage](https://img.shields.io/badge/functions-78%25-brightgreen)
+
+- 52 tests passing
+- Statement coverage: 75%
+- Branch coverage: 60%
+- Function coverage: 78%
 
 ---
 
