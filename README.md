@@ -64,7 +64,7 @@ After starting the server, visit:
 
 ```sh
 # http://localhost:3000/api-docs (for dev)
-https://wta-be.onrender.com/api-docs
+https://wta-be.onrender.com/api/docs
 
 ```
 
@@ -73,6 +73,8 @@ Swagger allows evaluators to:
 - explore endpoints
 - test requests directly
 - view request/response schemas
+
+[Manual API Testing Evidences](https://github.com/imperionite/wta-be/blob/main/MANUAL_API_TESTING.md)
 
 ---
 
@@ -598,11 +600,11 @@ After running the seed scripts, the following users are available for authentica
 
 ## Regular Users
 
-| Email                 | Password | Role |
-| --------------------- | -------- | ---- |
-| user1.wta@maildrop.cc | 123456   | user |
-| user2.wta@maildrop.cc | 123456   | user |
-| user3.wta@maildrop.cc | 123456   | user |
+| Email                 | Password    | Role |
+| --------------------- | ----------- | ---- |
+| user1.wta@maildrop.cc | password123 | user |
+| user2.wta@maildrop.cc | password123 | user |
+| user3.wta@maildrop.cc | password123 | user |
 
 ---
 
@@ -627,7 +629,7 @@ Request body:
 ```json
 {
   "email": "user1.wta@maildrop.cc",
-  "password": "123456"
+  "password": "password123"
 }
 ```
 
