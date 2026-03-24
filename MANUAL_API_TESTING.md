@@ -79,19 +79,6 @@
 
 ## ROOMS
 
-```sh
-
-@k358k
-
- GET /api/rooms — PublicRetrieve a list of all available rooms.
- GET /api/rooms/:id — PublicRetrieve details of a specific room.
- GET /api/rooms/:id/price — PublicPreview the calculated price for a room.
- POST /api/rooms — AdminCreate a new room listing.
- PUT /api/rooms/:id — AdminUpdate room information.
- DELETE /api/rooms/:id — AdminDelete a room.
-
-```
----
 ![Retrieve a list of all available rooms (Public) - GET /api/rooms](https://img.shields.io/badge/Retrieve%20all%20available%20rooms%20(Public)-GET%20%2Fapi%2Frooms-green?style=flat-square&logoSize=auto&color=%23105710)
 ![Get All Rooms](https://drive.google.com/uc?id=1Y9bT9BxeQBqC8uMP2Pp6KsyuXxqGbdbl)
 
@@ -113,7 +100,6 @@
 
 ---
 
----
 
 ## UPLOAD
 
