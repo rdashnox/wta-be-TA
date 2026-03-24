@@ -4,6 +4,8 @@ This document provides detailed technical documentation for the **Skye Suites Ho
 
 It explains the **system architecture, database design, authentication flow, and business rules** implemented in the backend system. For the frontend part of the project, please check the [wta-fe repository](https://github.com/imperionite/wta-fe).
 
+[![Coverage Status](https://coveralls.io/repos/github/imperionite/wta-be/badge.svg)](https://coveralls.io/github/imperionite/wta-be)
+
 # Table of Contents
 
 - [API Documentation](#api-documentation)
