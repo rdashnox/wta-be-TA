@@ -5,17 +5,24 @@
 ```sh
 
 @rdashnox
-# Evidence link: https://drive.google.com/drive/folders/1pMUoLG5Qp7QNGN5B9kDLp5Ej3Oh1yAeo?usp=sharing
-# delete after completing the tasks
-
- POST /api/auth/register — PublicCreate a new user account.
- POST /api/auth/login — PublicAuthenticate a user and return a JWT token.
- GET /api/auth/google — PublicStart Google OAuth login process.
- GET /api/auth/google/callback — PublicGoogle OAuth callback that returns the authenticated user token.
+# Evidence link: https://drive.google.com/drive/folders/1WH3czLZVYbVxpzBnj1W_rEIvNfdOo_6T?usp=drive_link
 
 ```
 
 ---
+
+![Create a new user account (Public) - POST /api/auth/register](https://img.shields.io/badge/Create%20a%20new%20user%20account%20(Public)-POST%20%2Fapi%2Fauth%2Fregister-green?style=flat-square&logoSize=auto&color=%23105710)
+![Create a new user account](https://drive.google.com/uc?id=1_Qp2aHnSmqdnyuMQDTlZzSiNjID0z1Mg)
+
+![Authenticate a user and return a JWT token (Public) - POST /api/auth/login](https://img.shields.io/badge/Authenticate%20a%20user%20and%20return%20a%20JWT%20token%20(Public)-POST%20%2Fapi%2Fauth%2Flogin-green?style=flat-square&logoSize=auto&color=%23105710)
+![Authenticate a user and return a JWT token](https://drive.google.com/uc?id=16sDdHAUsIdlXi4r-x4n7jbtxyl_50D58)
+
+![Start Google OAuth login process (Public) - GET /api/auth/google](https://img.shields.io/badge/Start%20Google%20OAuth%20login%20process%20(Public)-GET%20%2Fapi%2Fauth%2Fgoogle-green?style=flat-square&logoSize=auto&color=%23105710)
+![Start Google OAuth login process](https://drive.google.com/uc?id=1x7ftRRepLJEmi49AoD9otQiiMA9P2vHn)
+
+![Google OAuth callback that returns the authenticated user token (Public) - GET /api/auth/google/callback](https://img.shields.io/badge/Google%20OAuth%20callback%20that%20returns%20the%20authenticated%20user%20token%20(Public)-GET%20%2Fapi%2Fauth%2Fgoogle%2Fcallback-green?style=flat-square&logoSize=auto&color=%23105710)
+![Google OAuth callback that returns the authenticated user token](https://drive.google.com/uc?id=1CmFrlotAaXaJCouQd11TIVASJHVEZu6F)
+
 
 ## SUBSCRIPTION
 
@@ -75,32 +82,48 @@
 ```sh
 
 @rdashnox
-# Evidence link: https://drive.google.com/drive/folders/1pMUoLG5Qp7QNGN5B9kDLp5Ej3Oh1yAeo?usp=sharing
-# delete after completing the tasks
-
- GET /api/users/profile — AuthenticatedRetrieve the currently logged-in user profile.
- GET /api/users — AdminRetrieve a list of all registered users.
- DELETE /api/users/:id — AdminDelete a specific user account.
+# Evidence link: https://drive.google.com/drive/folders/1bQIUK_lQYKaHNao822axD3dkqKN2MJy1?usp=drive_link
 
 ```
 
 ---
+
+![Retrieve the currently logged-in user profile (Authenticated) - GET /api/users/profile](https://img.shields.io/badge/Retrieve%20the%20currently%20logged--in%20user%20profile%20(Authenticated)-GET%20%2Fapi%2Fusers%2Fprofile-green?style=flat-square&logoSize=auto&color=%23105710)
+![Retrieve the currently logged-in user profile](https://drive.google.com/uc?id=1Efg55s9z7Jbn-NuDuJh7W4gZeivBK_zy)
+
+![Retrieve a list of all registered users (Admin) - GET /api/users](https://img.shields.io/badge/Retrieve%20a%20list%20of%20all%20registered%20users%20(Admin)-GET%20%2Fapi%2Fusers-green?style=flat-square&logoSize=auto&color=%23105710)
+![Retrieve a list of all registered users](https://drive.google.com/uc?id=1a6TZ--EvyBtsxKTdiMoK9YQgab7YjL5p)
+
+![Delete a specific user account (Admin) - DELETE /api/users/:id](https://img.shields.io/badge/Delete%20a%20specific%20user%20account%20(Admin)-DELETE%20%2Fapi%2Fusers%2F%3Aid-green?style=flat-square&logoSize=auto&color=%23105710)
+![Delete a specific user account](https://drive.google.com/uc?id=1Dj5ZVG--lC9Yef63xmGa465-qyY5vv-z)
+
 
 ## BOOKING
 
 ```sh
 
 @rdashnox
-# Evidence link: https://drive.google.com/drive/folders/1pMUoLG5Qp7QNGN5B9kDLp5Ej3Oh1yAeo?usp=sharing
-# delete after completing the tasks
- POST /api/booking — AuthenticatedCreate a new room booking.
- GET /api/booking/my — AuthenticatedRetrieve bookings made by the currently logged-in user.GET /api/booking — AdminRetrieve all bookings in the system.
- PUT /api/booking/:id — User/AdminUpdate an existing booking.
- PATCH /api/booking/:id — User/AdminCancel a booking.
+# Evidence link: https://drive.google.com/drive/folders/1iZiLSPIcaYJiybppLyK3Tjw6zIz9DHH5?usp=drive_link
 
 ```
 
 ---
+
+![Create a new room booking (Authenticated) - POST /api/booking](https://img.shields.io/badge/Create%20a%20new%20room%20booking%20(Authenticated)-POST%20%2Fapi%2Fbooking-green?style=flat-square&logoSize=auto&color=%23105710)
+![Create a new room booking](https://drive.google.com/uc?id=126dEiCbkw4IbZWSPS6NeRRMrie1Bm6aK)
+
+![Retrieve bookings made by the currently logged-in user (Authenticated) - GET /api/booking/my](https://img.shields.io/badge/Retrieve%20bookings%20made%20by%20the%20currently%20logged--in%20user%20(Authenticated)-GET%20%2Fapi%2Fbooking%2Fmy-green?style=flat-square&logoSize=auto&color=%23105710)
+![Retrieve bookings made by the currently logged-in user](https://drive.google.com/uc?id=1P8QWjlLyUnW4V5_u76hEGmS7jX4XaMx7)
+
+![Retrieve all bookings in the system (Admin) - GET /api/booking](https://img.shields.io/badge/Retrieve%20all%20bookings%20in%20the%20system%20(Admin)-GET%20%2Fapi%2Fbooking-green?style=flat-square&logoSize=auto&color=%23105710)
+![Retrieve all bookings in the system](https://drive.google.com/uc?id=1eYTazWgL9_8fm4hebaTpDZGC-EpITmGR)
+
+![Update an existing booking (Authenticated) - PUT /api/booking/:id](https://img.shields.io/badge/Update%20an%20existing%20booking%20(Authenticated)-PUT%20%2Fapi%2Fbooking%2F%3Aid-green?style=flat-square&logoSize=auto&color=%23105710)
+![Update an existing booking](https://drive.google.com/uc?id=10eSOslf9A_1Ucf47ji4h--6KQG8R8fMZ)
+
+![Cancel a booking (Authenticated) - PATCH /api/booking/:id](https://img.shields.io/badge/Cancel%20a%20booking%20(Authenticated)-PATCH%20%2Fapi%2Fbooking%2F%3Aid-green?style=flat-square&logoSize=auto&color=%23105710)
+![Cancel a booking](https://drive.google.com/uc?id=19xHdnBdydgnUBPDbqsWE7TgvXNcn_W8P)
+
 
 ## ROOMS
 
