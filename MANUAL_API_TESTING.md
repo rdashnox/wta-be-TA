@@ -79,22 +79,27 @@
 
 ## ROOMS
 
-```sh
+![Retrieve a list of all available rooms (Public) - GET /api/rooms](https://img.shields.io/badge/Retrieve%20all%20available%20rooms%20(Public)-GET%20%2Fapi%2Frooms-green?style=flat-square&logoSize=auto&color=%23105710)
+![Get All Rooms](https://drive.google.com/uc?id=1Y9bT9BxeQBqC8uMP2Pp6KsyuXxqGbdbl)
 
-@k358k
-# Evidence link: https://drive.google.com/drive/folders/19X8eIzMjQu9N2BBdL3qe5JkOn-XI-iNV?usp=sharing
-# delete after completing the tasks
+![Retrieve details of a specific room (Public) - GET /api/rooms/:id](https://img.shields.io/badge/Retrieve%20room%20details%20(Public)-GET%20%2Fapi%2Frooms%2F:id-green?style=flat-square&logoSize=auto&color=%23105710)
+![Get Room Details](https://drive.google.com/uc?id=1eS6ivPGYuA5FPBqjHMDxdbSYTr2fbgzh)
 
- GET /api/rooms — PublicRetrieve a list of all available rooms.
- GET /api/rooms/:id — PublicRetrieve details of a specific room.
- GET /api/rooms/:id/price — PublicPreview the calculated price for a room.
- POST /api/rooms — AdminCreate a new room listing.
- PUT /api/rooms/:id — AdminUpdate room information.
- DELETE /api/rooms/:id — AdminDelete a room.
+![Preview the calculated price for a room (Public) - GET /api/rooms/:id/price](https://img.shields.io/badge/Preview%20price%20calculation%20(Public)-GET%20%2Fapi%2Frooms%2F:id%2Fprice-green?style=flat-square&logoSize=auto&color=%23105710)
+![Price Calculation](https://drive.google.com/uc?id=1ec3XemHuVJ6YQiBznwVytUeSaEvZbbYh)
 
-```
+![Create a new room listing (Admin) - POST /api/rooms](https://img.shields.io/badge/Create%20a%20new%20room%20listing%20(Admin)-POST%20%2Fapi%2Frooms-green?style=flat-square&logoSize=auto&color=%23105710)
+![Create Room](https://drive.google.com/uc?id=1a1_vLgruWwNo_hnSC6fvZTfFaPVr1IPZ)
+
+![Update room information (Admin) - PUT /api/rooms/:id](https://img.shields.io/badge/Update%20room%20information%20(Admin)-PUT%20%2Fapi%2Frooms%2F:id-green?style=flat-square&logoSize=auto&color=%23105710)
+![Update Room](https://drive.google.com/uc?id=1PyU2DIS7g6dVbQUtfr4Ts82TI7n6D-K4)
+
+![Delete a room (Admin) - DELETE /api/rooms/:id](https://img.shields.io/badge/Delete%20a%20room%20(Admin)-DELETE%20%2Fapi%2Frooms%2F:id-green?style=flat-square&logoSize=auto&color=%23105710)
+
+![Delete Room](https://drive.google.com/uc?id=1NRdrm9yQ3daz_BMTVgrp3pLipFHUSoje)
 
 ---
+
 
 ## UPLOAD
 
