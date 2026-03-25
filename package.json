@@ -27,6 +27,7 @@
     "test:contact": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/contactController.test.js",
     "test:subscription": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/subscriptionController.test.js",
     "test:auth": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/authController.test.js",
+    "test:health": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/healthController.test.js",
     "test:auth:int": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/integration/auth.test.js",
     "test:room": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles tests/unit/roomController.test.js",
     "test:unit:watch": "cross-env NODE_ENV=test jest tests/unit --watch",

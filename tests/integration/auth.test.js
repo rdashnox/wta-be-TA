@@ -88,7 +88,7 @@ describe("Auth API Integration Tests", () => {
     });
   });
 
-  describe("GET /api/auth/profile", () => {
+  describe("GET /api/users/profile", () => {
     let userToken;
 
     beforeEach(async () => {

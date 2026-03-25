@@ -145,6 +145,30 @@ const router = express.Router();
  *         description: Booking not found
  */
 
+/**
+ * @swagger
+ * /api/booking/{id}:
+ *   delete:
+ *     summary: Cancel a booking (Soft delete)
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Booking ID
+ *     responses:
+ *       200:
+ *         description: Booking cancelled
+ *       400:
+ *         description: Already cancelled or invalid status
+ *       404:
+ *         description: Booking not found
+ */
+
 // JWT authentication for all booking routes
 router.use(passport.authenticate("jwt", { session: false }));
 
@@ -177,7 +201,7 @@ router
     requireOwnership("Booking"),
     bookingController.updateBooking,
   )
-  .patch(
+  .delete(
     validateParamId("id"),
     requireOwnership("Booking"),
     bookingController.cancelBooking,
