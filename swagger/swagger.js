@@ -6,9 +6,9 @@ const options = {
   definition: {
     openapi: "3.0.3",
     info: {
-      title: "Sky Suites Hotel API",
+      title: "Sky Suites Hotel API by WTA-BE Project",
       version: "1.0.0",
-      description: "Dynamic API documentation for the Sky Suites system",
+      description: "Dynamic API documentation for the Sky Suites Hotel facility system",
     },
     components: {
       schemas,

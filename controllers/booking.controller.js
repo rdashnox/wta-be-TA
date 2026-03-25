@@ -115,7 +115,7 @@ exports.updateBooking = async (req, res) => {
 };
 
 /**
- * Delete own booking (User) or any booking (Admin)
+ * DELETE (Soft Delete) a booking - using DELETE instead of PATCH
  */
 exports.cancelBooking = async (req, res) => {
   try {
@@ -124,11 +124,12 @@ exports.cancelBooking = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    // Ownership already checked by middleware, but verify status
+    // ownership already checked by middleware, but verify status
     if (booking.status === "cancelled") {
       return res.status(400).json({ message: "Booking already cancelled" });
     }
 
+    // mark as cancelled (soft delete)
     await Booking.findByIdAndUpdate(req.params.id, {
       status: "cancelled",
     });

@@ -334,9 +334,9 @@ describe("Booking API Integration Tests", () => {
       const res = await request(app)
         .delete(`/api/booking/${bookingId}`)
         .set("Authorization", `Bearer ${userToken}`)
-        .expect(404);
+        .expect(200);
 
-      //expect(res.body.message).toBe("Booking cancelled successfully");
+      expect(res.body.message).toBe("Booking cancelled successfully");
     });
 
     it("should reject non-existent booking", async () => {
@@ -356,7 +356,7 @@ describe("Booking API Integration Tests", () => {
       await request(app)
         .delete(`/api/booking/${bookingId}`)
         .set("Authorization", `Bearer ${otherToken}`)
-        .expect(404);
+        .expect(403);
     });
   });
 
