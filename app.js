@@ -17,6 +17,8 @@ const rateLimit = require("express-rate-limit");
 const xss = require("xss-clean"); // Extra XSS protection
 const { swaggerSpec, swaggerUi } = require("./swagger/swagger");
 
+const allowedOrigins = config.frontendUrls;
+
 // Initialize DOMPurify
 let DOMPurify;
 if (!config.isTest) {
@@ -41,6 +43,8 @@ const app = express();
 // health check endpoint
 app.use("/health", healthRouter);
 
+app.set("trust proxy", 1);
+
 // Connect to database
 if (!config.isTest) {
   connectDB();
@@ -57,7 +61,7 @@ helmet.contentSecurityPolicy({
     ],
     styleSrc: ["'self'", "https://cdn.jsdelivr.net"],
     imgSrc: ["'self'", "data:"],
-    connectSrc: ["'self'", config.frontendUrl],
+    connectSrc: ["'self'", ...config.frontendUrls],
     fontSrc: [
       "'self'",
       "https://cdn.jsdelivr.net",
@@ -75,10 +79,18 @@ app.use(mongoSanitize());
 // Prevent XSS (basic)
 app.use(xss());
 
-// Enable CORS with credentials
 app.use(
   cors({
-    origin: config.frontendUrl,
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps / curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS: " + origin));
+      }
+    },
     credentials: true,
   }),
 );
