@@ -6,7 +6,10 @@ const config = {
   port: process.env.PORT || 3000,
   mongoUri: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/wtadb",
   jwtSecret: process.env.JWT_SECRET,
-  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+  frontendUrls: process.env.FRONTEND_URLS
+  ? process.env.FRONTEND_URLS.split(",")
+  : ["http://localhost:5173"],
+  //frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   apiUrl: process.env.API_URL || "http://localhost:3000/api",
   isTest: process.env.NODE_ENV === "test",
   isDev: process.env.NODE_ENV === "development",

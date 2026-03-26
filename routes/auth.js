@@ -76,13 +76,16 @@ const router = express.Router();
 router.post("/register", loginLimiter, validateRegister, register);
 router.post("/login", loginLimiter, validateLogin, login);
 
-router.get(
-  "/google",
+router.get("/google", (req, res, next) => {
+  const frontend = req.query.origin; // need to pass this from frontend
+  const state = Buffer.from(JSON.stringify({ frontend })).toString("base64");
+
   passport.authenticate("google", {
     scope: ["profile", "email"],
     session: false,
-  }),
-);
+    state,
+  })(req, res, next);
+});
 
 router.get(
   "/google/callback",
@@ -103,8 +106,21 @@ router.get(
       { expiresIn: "1h" },
     );
 
-    // Redirect to frontend with token
-    res.redirect(`${config.frontendUrl}/oauth-success?token=${access}`);
+    // Decode state
+    let frontendUrl = config.frontendUrls[0]; // fallback
+    if (req.query.state) {
+      try {
+        const parsed = JSON.parse(
+          Buffer.from(req.query.state, "base64").toString(),
+        );
+
+        if (config.frontendUrls.includes(parsed.frontend)) {
+          frontendUrl = parsed.frontend;
+        }
+      } catch (e) {}
+    }
+
+    res.redirect(`${frontendUrl}/oauth-success?token=${access}`);
   },
 );
 
