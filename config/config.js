@@ -7,14 +7,17 @@ const config = {
   mongoUri: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/wtadb",
   jwtSecret: process.env.JWT_SECRET,
   frontendUrls: process.env.FRONTEND_URLS
-  ? process.env.FRONTEND_URLS.split(",")
-  : ["http://localhost:5173"],
-  //frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+    ? process.env.FRONTEND_URLS.split(",")
+    : ["http://localhost:5173"],
   apiUrl: process.env.API_URL || "http://localhost:3000/api",
   isTest: process.env.NODE_ENV === "test",
   isDev: process.env.NODE_ENV === "development",
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  emailVerifierApiKey: process.env.EMAIL_VERIFIER_API_KEY,
+  adminEmail: process.env.ADMIN_EMAIL,
+  gmailUser: process.env.GMAIL_USER,
+  gmailAppPass: process.env.GMAIL_APP_PASS,
 };
 
 if (!config.mongoUri || !config.jwtSecret) {
