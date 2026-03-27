@@ -1,17 +1,30 @@
+const config = require("../config/config");
+const nodemailer = require("nodemailer");
 const Contact = require("../models/Contact");
+const { verifyEmail } = require("../utils/emailVerifier");
+const logger = require("../utils/logger");
+
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: config.gmailUser,
+    pass: config.gmailAppPass,
+  },
+});
 
 exports.createContactMessage = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 
-    // Validate required fields
     if (!name || !email || !message) {
       return res.status(400).json({
         message: "Please enter all required fields: name, email, and message.",
       });
     }
 
-    // Create a new contact message using the Contact model
+    await verifyEmail(email);
+
     const newContactMessage = await Contact.create({
       name,
       email,
@@ -19,13 +32,44 @@ exports.createContactMessage = async (req, res) => {
       message,
     });
 
-    // Return a success response with the created message
+    // ADMIN EMAIL - Fixed format + variables
+    await transporter.sendMail({
+      from: `"Contact Form" <${config.gmailUser}>`,
+      to: config.adminEmail,
+      subject: `🔔 New Contact: ${subject}`,
+      html: `
+        <h3>New Contact Message</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong><br>${message}</p>
+      `,
+      text: `New Contact: ${subject}\nName: ${name}\nEmail: ${email}\n${message}`,
+    });
+
+    // CONFIRMATION EMAIL - ALL VARIABLES FIXED
+    await transporter.sendMail({
+      from: `"Support Team" <${config.adminEmail}>`,
+      to: email,
+      replyTo: config.gmailUser,
+      subject: `Re: ${subject}`,
+      html: `
+        <h3>Thank You!</h3>
+        <p>Hi <strong>${name}</strong>,</p>
+        <p>We've received your message "${subject}".</p>
+        <p>Reply within 24 hours.</p>
+        <p>Regards,<br>Sky Suites Hotel Support Team</p>
+      `,
+      text: `Hi ${name},\n\nThank you for "${subject}". We'll reply soon!\n\nSky Suites Hotel Support Team`,
+    });
+
     res.status(201).json({
       message: "Contact message sent successfully!",
       contact: newContactMessage,
     });
   } catch (error) {
-    // Handle validation errors or other database errors
+    logger.error("Email Error:", error.response?.data || error.message);
+    logger?.error(`Contact error: ${error.message}`);
     res.status(400).json({ message: error.message });
   }
 };
@@ -33,7 +77,7 @@ exports.createContactMessage = async (req, res) => {
 exports.getAllContactMessages = async (req, res) => {
   try {
     // Find all contact messages and sort them by creation date in descending order (newest first)
-    const messages = await Contact.find().sort({ createdAt: -1 }); 
+    const messages = await Contact.find().sort({ createdAt: -1 });
 
     // Return the fetched messages
     res.status(200).json({

@@ -13,7 +13,7 @@ const logger = require("./utils/logger");
 const connectDB = require("./config/db");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
-const xss = require("xss-clean"); // Extra XSS protection
+const xss = require("xss-clean");
 const { swaggerSpec, swaggerUi } = require("./swagger/swagger");
 
 const allowedOrigins = config.frontendUrls;
@@ -49,6 +49,15 @@ if (!config.isTest) {
   connectDB();
 }
 
+// Body parser with size limit
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: false, limit: "10kb" }));
+
+// Prevent NoSQL injection
+app.use(mongoSanitize());
+// Prevent XSS (basic)
+app.use(xss());
+
 // Set security headers
 helmet.contentSecurityPolicy({
   directives: {
@@ -71,12 +80,6 @@ helmet.contentSecurityPolicy({
     upgradeInsecureRequests: [],
   },
 });
-
-// Prevent NoSQL injection
-app.use(mongoSanitize());
-
-// Prevent XSS (basic)
-app.use(xss());
 
 app.use(
   cors({
@@ -107,10 +110,6 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use("/api", limiter);
-
-// Body parser with size limit
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser(process.env.COOKIE_SECRET || "defaultSecret"));
 
