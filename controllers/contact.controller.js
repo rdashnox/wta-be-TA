@@ -58,8 +58,7 @@ exports.createContactMessage = async (req, res) => {
         <p>Hi <strong>${name}</strong>,</p>
         <p>We've received your message "${subject}".</p>
         <p>Reply within 24 hours.</p>
-        <p>Regards,<br>Sky Suites Hotel Support Team</p>
-      `,
+       <p>Regards,<br><a href="https://wta-fe.web.app" target="_blank" rel="noopener noreferrer">Sky Suites Hotel Support Team</a></p>`,
       text: `Hi ${name},\n\nThank you for "${subject}". We'll reply soon!\n\nSky Suites Hotel Support Team`,
     });
 
