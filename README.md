@@ -79,6 +79,61 @@ Swagger allows evaluators to:
 
 ---
 
+# CLI Commands
+
+## Development & Production Servers
+
+| Command         | Description                           |
+| --------------- | ------------------------------------- |
+| `npm run dev`   | Start development server with nodemon |
+| `npm run start` | Start production server               |
+
+### Specific Unit Tests
+
+| Command                     | Test File                        |
+| --------------------------- | -------------------------------- |
+| `npm run test:booking`      | `bookingService.test.js`         |
+| `npm run test:pricing`      | `pricingService.test.js`         |
+| `npm run test:contact`      | `contactController.test.js`      |
+| `npm run test:subscription` | `subscriptionController.test.js` |
+| `npm run test:auth`         | `authController.test.js`         |
+| `npm run test:health`       | `healthController.test.js`       |
+| `npm run test:room`         | `roomController.test.js`         |
+
+### Specific Integration Tests
+
+| Command                    | Test File         |
+| -------------------------- | ----------------- |
+| `npm run test:booking:int` | `booking.test.js` |
+| `npm run test:auth:int`    | `auth.test.js`    |
+
+## Database Seeding Commands
+
+| Command                 | Description                              | Environment |
+| ----------------------- | ---------------------------------------- | ----------- |
+| `npm run seed:users`    | Seed users data                          | Development |
+| `npm run seed:rooms`    | Seed rooms data                          | Development |
+| `npm run seed:bookings` | Seed bookings data                       | Development |
+| `npm run seed:all`      | Seed all data (users + rooms + bookings) | Development |
+| `npm run seed:dev`      | Complete dev seeding                     | Development |
+| `npm run seed:clean`    | Clean + reseed all dev data              | Development |
+| `npm run seed:prod`     | Seed all data for production             | Production  |
+| `npm run deploy:seed`   | Deploy production seeding                | Production  |
+
+## Testing Commands
+
+| Command                          | Description                    |
+| -------------------------------- | ------------------------------ |
+| `npm test`                       | Run all tests                  |
+| `npm run test:watch`             | Run tests in watch mode        |
+| `npm run test:coverage`          | Run tests with coverage report |
+| `npm run test:unit`              | Run unit tests only            |
+| `npm run test:integration`       | Run integration tests only     |
+| `npm run test:unit:watch`        | Watch unit tests               |
+| `npm run test:integration:watch` | Watch integration tests        |
+
+---
+
 # Database Design
 
 Database documentation is available in [this ink](https://github.com/imperionite/wta-be/blob/main/ERD_AND_DATA_DICTIONARY.md).
