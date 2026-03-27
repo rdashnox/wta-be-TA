@@ -10,7 +10,6 @@ const mongoSanitize = require("express-mongo-sanitize");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const logger = require("./utils/logger");
-const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
