@@ -136,7 +136,12 @@ Swagger allows evaluators to:
 
 # Database Design
 
-Database documentation is available in [this ink](https://github.com/imperionite/wta-be/blob/main/ERD_AND_DATA_DICTIONARY.md).
+Links to the database design and documentation:
+
+> **Note**: These diagrams represent a MongoDB-based system and are conceptual representations, not traditional Relational DB schemas.
+
+- [Entity Relationship](https://github.com/imperionite/wta-be/blob/main/ERD_AND_DATA_DICTIONARY.md)
+- [Data Flow](https://github.com/imperionite/wta-be/blob/main/DFD.md)
 
 # System Architecture
 
