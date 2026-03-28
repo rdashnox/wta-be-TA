@@ -27,6 +27,16 @@ const router = express.Router();
  * /api/contact:
  *   post:
  *     summary: Submit a new contact message
+ *     description: |
+ *       Sends a contact message after verifying the email.
+ *
+ *       📧 Side Effects:
+ *       - Sends notification email to admin
+ *       - Sends confirmation email to user
+ *
+ *       ⚠️ Note:
+ *       - Email must be valid (verified via external API)
+ *       - Disposable emails are allowed for testing
  *     tags: [Contact]
  *     requestBody:
  *       required: true
@@ -34,6 +44,7 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [name, email, message]
  *             properties:
  *               name:
  *                 type: string
@@ -41,15 +52,22 @@ const router = express.Router();
  *               email:
  *                 type: string
  *                 example: john@example.com
+ *               subject:
+ *                 type: string
+ *                 example: Inquiry
  *               message:
  *                 type: string
- *                 example: Hello, I have a question about your services.
+ *                 example: Hello, I have a question.
  *     responses:
  *       201:
  *         description: Message submitted successfully
  *       400:
- *         description: Validation error
- *
+ *         description: Validation error or invalid email
+ */
+
+/**
+ * @swagger
+ * /api/contact:
  *   get:
  *     summary: Get all contact messages (Admin only)
  *     tags: [Contact]
@@ -64,7 +82,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/contact/{id}:
+ * /api/contact/{id}/read:
  *   put:
  *     summary: Mark a contact message as read (Admin only)
  *     tags: [Contact]
@@ -73,17 +91,14 @@ const router = express.Router();
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: Contact message ID
  *     responses:
  *       200:
  *         description: Message marked as read
  *       404:
  *         description: Message not found
- *       401:
- *         description: Unauthorized
  */
 
 // Public: Create contact message - added validateContact and contactLimiter

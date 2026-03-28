@@ -16,6 +16,7 @@ const rateLimit = require("express-rate-limit");
 const xss = require("xss-clean");
 const { swaggerSpec, swaggerUi } = require("./swagger/swagger");
 
+
 const allowedOrigins = config.frontendUrls;
 
 // Initialize DOMPurify
