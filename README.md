@@ -43,7 +43,7 @@ It explains the **system architecture, database design, authentication flow, and
 - [Error Handling](#error-handling)
 - [Logging](#logging)
 - [Development Tools](#development-tools)
-- [Known Limitations](#known-limitations)
+- [Email Verification and Sending](#email-verification-and-sending)
 
 - [Evaluator Testing Guide](#evaluator-testing-guide)
   - [Test Coverage](#test-coverage)
@@ -543,18 +543,17 @@ Logs are used for:
 
 ---
 
-# Known Limitations
+## Email Verification and Sending
 
-This project is an academic proof-of-concept.
+**Contact** and **Subscription** endpoints validate emails and send notifications.
 
-The system does not include:
+- **Email Verification:** via [EmailVerifierAPI](https://emailverifierapi.com). Invalid emails → 400 error.
+- **Email Sending:** via Nodemailer (Gmail SMTP).
 
-- payment processing
-- refund systems
-- distributed caching
-- microservices architecture
+**Contact:** Admin notified first, then user confirmation after saving.
+**Subscription:** Subscribe → confirmation, Resubscribe → welcome back, Unsubscribe → confirmation.
 
-These features would typically be implemented in production environments.
+**Testing:** Use real or disposable emails. Verification requires valid addresses.
 
 ---
 
